@@ -6,16 +6,22 @@ class FileWrap {
 		this._fileDir = fileDir;
 		this._loaded = new Buffer();
 		this.fd = null;
+
+		this.initialized = false;
 	}
 
 	get loaded () {
 		return this.fd !== null;
 	}
 
-	init () {
-		this._open()
-			.then(fd => this.fd = fd)
-			.catch(Err.FatalCurry("Opening file to retrieve file-descriptor failed."));
+	async init () {
+		try {
+			this.fd = await this._open();
+		} catch (err) {
+			Err.FatalError(err, "Opening file to retrieve file-descriptor failed.");
+		}
+		
+		this.initialized = true;
 	}
 
 	_open () {
@@ -28,7 +34,15 @@ class FileWrap {
 		}));
 	}
 
-	_loadData (fd, pos, length) {
+	_loadData (pos, length, fd=null) {
+		if (!this.initialized) {
+			return Err.FatalError("Attempt to load data without being initialized.");
+		}
+
+		if (fd === null) {
+			fd = this.fd;
+		}
+
 		let buf = new Buffer();
 
 		return new Promise((resolve, reject) => fs.read(fd, buf, 0, length, pos, (err, bytesRead, buffer) => {
