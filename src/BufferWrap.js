@@ -58,6 +58,74 @@ class BufferWrap {
 	readUInt32LE (offset) {
 		return this._buffer.readUInt32LE(offset);
 	}
+
+	slice (start, end) {
+		return this._buffer.slice(start, end);
+	}
+
+	values () {
+		return this._buffer.values();
+	}
+
+	writeString (string, offset=0, encoding='utf8') {
+		return this._buffer.write(string, offset, undefined, encoding);
+	}
+
+	writeDoubleBE (value, offset) {
+		return this._buffer.writeDoubleBE(value, offset);
+	}
+
+	writeDoubleLE (value, offset) {
+		return this._buffer.writeDoubleLE(value, offset);
+	}
+
+	writeFloatBE (value, offset) {
+		return this._buffer.writeFloatBE(value, offset);
+	}
+
+	writeFloatLE (value, offset) {
+		return this._buffer.writeFloatLE(value, offset);
+	}
+
+	writeInt8 (value ,offset) {
+		return this._buffer.writeInt8(value, offset);
+	}
+
+	writeInt16BE (value, offset) {
+		return this._buffer.writeInt16BE(value, offset);
+	}
+
+	writeInt16LE (value, offset) {
+		return this._buffer.writeInt16LE(value, offset);
+	}
+
+	writeInt32BE (value, offset) {
+		return this._buffer.writeInt32BE(value, offset);
+	}
+
+	writeInt32LE(value, offset) {
+		return this._buffer.writeInt32LE(value, offset);
+	}
+
+	writeUInt8 (value ,offset) {
+		return this._buffer.writeUInt8(value, offset);
+	}
+
+	writeUInt16BE (value, offset) {
+		return this._buffer.writeUInt16BE(value, offset);
+	}
+
+	writeUInt16LE (value, offset) {
+		return this._buffer.writeUInt16LE(value, offset);
+	}
+
+	writeUInt32BE (value, offset) {
+		return this._buffer.writeUInt32BE(value, offset);
+	}
+
+	writeUInt32LE(value, offset) {
+		return this._buffer.writeUInt32LE(value, offset);
+	}
 }
 
-module.exports = BufferWrap
+module.exports = BufferWrap;
