@@ -6,7 +6,6 @@ class FileWrap {
 		this._fileDir = fileDir;
 		this._loaded = new Buffer();
 		this.fd = null;
-		
 	}
 
 	get loaded () {
