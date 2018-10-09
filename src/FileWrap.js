@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Err = require('./Error.js');
 
 class FileWrap {
 	constructor (fileDir) {
@@ -14,7 +15,8 @@ class FileWrap {
 
 	init () {
 		this._open()
-			.then(fd => this.fd = fd);
+			.then(fd => this.fd = fd)
+			.catch(Err.FatalCurry("Opening file to retrieve file-descriptor failed."));
 	}
 
 	_open () {
