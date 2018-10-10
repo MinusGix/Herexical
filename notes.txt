@@ -5,3 +5,5 @@ buffer.constants.max_LENGTH
 - THe largest size allowed for a single Buffer instance.
 On 32bit archs it is (2^30)-1 (~1GB)
 On 64bit archs it is (2^31)-1 (~2GB)
+
+Nodejs complains when I try making a too long buffer into a string. (1GB file filled with nul `buf.toString('hex')`) 'Error: Cannot create a string longer than 0x3fffffe7 characters'
