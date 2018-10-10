@@ -1,0 +1,11 @@
+- Make a UI (Electron? NWJS? Browser?)
+	- Tabs, so multiple files can be open at once
+		- Splitscreen tabs
+		- Option to open them in their own window
+	- Sidebar with preview of value of current type at current selection
+	- 
+- Add some caching mechanism to prevent repeated calls to functions that are unlikely to change. (Such as FileWrap#getSize)
+- Add a method to read/write 64bit numbers
+- Add a method to read/write 128bit numbers
+-? Add a method to read/write arbitrary bit numbers? Would make this a whole lot easier
+- 
