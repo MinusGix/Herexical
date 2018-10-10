@@ -25,6 +25,24 @@ class FileWrap {
 		this.initialized = true;
 	}
 
+	getStats () {
+		return new Promise((resolve, reject) => fs.stat(this._fileDir, {
+			bigint: true, // get the numbers in BigInt
+		}, (err, stats) => {
+			if (err) {
+				return reject(err);
+			}
+
+			resolve(stats);
+		}));
+	}
+
+	getSize () {
+		return this.getStats()
+			.then(stats => stats.size) // BigInt
+	}
+
+
 	_open () {
 		return new Promise((resolve, reject) => fs.open(this._fileDir, 'r+', (err, fd) => {
 			if (err) {
