@@ -67,6 +67,10 @@ class FileWrap {
 			fd = this.fd;
 		}
 
+		if (length > FileWrap.MAX_BUFFER_SIZE) {
+			throw new RangeError("Attempted to construct buffer of larger than `" + FileWrap.MAX_BUFFER_SIZE + "` size.");
+		}
+
 		let buf = Buffer.alloc(length);
 
 		return new Promise((resolve, reject) => fs.read(fd, buf, 0, length, pos, (err, bytesRead, buffer) => {
@@ -78,5 +82,8 @@ class FileWrap {
 		}));
 	}
 }
+
+FileWrap.MAX_BUFFER_SIZE = 1024n * 1024n // 1 MegaByte (1024 bytes * 1024 times = 1MB)
+	* 256n; // 256mb
 
 module.exports = FileWrap;
