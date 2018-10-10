@@ -44,7 +44,7 @@ class FileWrap {
 			fd = this.fd;
 		}
 
-		let buf = new Buffer();
+		let buf = Buffer.alloc(length);
 
 		return new Promise((resolve, reject) => fs.read(fd, buf, 0, length, pos, (err, bytesRead, buffer) => {
 			if (err) {
