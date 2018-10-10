@@ -1,10 +1,11 @@
 const fs = require('fs');
 const Err = require('./Error.js');
+const BufferWrap = require('./BufferWrap.js');
 
 class FileWrap {
 	constructor (fileDir) {
 		this._fileDir = fileDir;
-		this._loaded = new Buffer();
+		this._loaded = new BufferWrap();
 		this.fd = null;
 
 		this.initialized = false;
