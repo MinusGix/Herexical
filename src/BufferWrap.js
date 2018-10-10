@@ -1,8 +1,65 @@
+const Err = require('./Error.js');
+
 class BufferWrap {
 	constructor () {
 		this._buffer = new Buffer();
 		this.defaultEndian = 0; // Big Endian
 	}
+
+	resetBuffer () {
+		this._buffer = new Buffer();
+		
+		return this;
+	}
+
+	clearBuffer () {
+		this._buffer.fill(0, 0, this._buffer.length);
+		
+		return this;
+	}
+
+	swapBuffer (buffer) {
+		if (buffer instanceof Buffer) {
+			this._buffer = buffer;
+		} else if (buffer instanceof BufferWrap) {
+			this._buffer = buffer._buffer;
+		} else {
+			throw new TypeError("BufferWrap#swapBuffer given argument that was not an instance of Buffer or BufferWrap.");
+		}
+
+		return this;
+	}
+
+	setEndian (endian) {
+		if (typeof(endian) === 'number') {
+			if (endian === 0 || endian === 1) {
+				this.defaultEndian = endian;
+			} else {
+				throw new TypeError(endian + " is an invalid endian.");
+			}
+		} else if (typeof(endian) === 'string') {
+			endian = endian.toLowerCase();
+
+			if (endian === 'little' || endian === 'littleendian' || endian === 'little-endian' || endian === 'little endian') {
+				return this.setEndian(1);
+			} else if (endian === 'big' || endian === 'bigendian' || endian === 'big-endian' || endian === 'big endian') {
+				return this.setEndian(0);
+			} else {
+				throw new TypeError(endian + " is an invalid endian.");
+			}
+		}
+	}
+
+	// If I ever make more than one endian setting this won't work
+	flipEndian () {
+		if (this.defaultEndian === 0) {
+			return this.setEndian(1);
+		} else if (this.defaultEndian === 1) {
+			return this.setEndian(0);
+		}
+
+		Err.FatalError("BufferWrap#defaultEndian property was neither 0 (Big Endian) or 1 (Little Endian)!");
+	} 
 
 	manageEndian (bigEndianFunction, littleEndianFunction, type, ...args) {
 		if (typeof(type) !== 'number') {
