@@ -37,6 +37,11 @@ class FileWrap {
 		}));
 	}
 
+	loadData (pos, length) {
+		return this._loadData(pos, length)
+			.then((buffer, bytesRead) => this._loaded.swapBuffer(buffer));
+	}
+
 	getSize () {
 		return this.getStats()
 			.then(stats => stats.size) // BigInt
