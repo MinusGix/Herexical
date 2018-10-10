@@ -2,12 +2,12 @@ const Err = require('./Error.js');
 
 class BufferWrap {
 	constructor () {
-		this._buffer = new Buffer();
+		this._buffer = null
 		this.defaultEndian = 0; // Big Endian
 	}
 
 	resetBuffer () {
-		this._buffer = new Buffer();
+		this._buffer = new Buffer(0);
 		
 		return this;
 	}
