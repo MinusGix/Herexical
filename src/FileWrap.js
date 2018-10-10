@@ -26,7 +26,7 @@ class FileWrap {
 	}
 
 	_open () {
-		return new Promise((resolve, reject) => fs.open(this._fileDir, 'wr', (err, fd) => {
+		return new Promise((resolve, reject) => fs.open(this._fileDir, 'r+', (err, fd) => {
 			if (err) {
 				throw err;
 			}
