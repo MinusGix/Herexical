@@ -1,9 +1,14 @@
 class BufferWrap {
 	constructor () {
 		this._buffer = new Buffer();
+		this.defaultEndian = 0; // Big Endian
 	}
 
-	manageEndian (bigEndianFunction, littleEndianFunction, type=0, ...args) {
+	manageEndian (bigEndianFunction, littleEndianFunction, type, ...args) {
+		if (typeof(type) !== 'number') {
+			type = this.defaultEndian;
+		}
+
 		if (type === 0) { // Big Endian
 			return bigEndianFunction(...args);
 		} else if (type === 1) { // Little Endian
@@ -21,7 +26,7 @@ class BufferWrap {
 		return this._buffer.readDoubleLE(offset);
 	}
 
-	readDouble (offset, type=0) {
+	readDouble (offset, type) {
 		return this.manageEndian(this.readDoubleBE, this.readDoubleLE, type, offset);
 	}
 
@@ -33,7 +38,7 @@ class BufferWrap {
 		return this._buffer.readFloatLE(offset);
 	}
 
-	readFloat (offset, type=0) {
+	readFloat (offset, type) {
 		return this.manageEndian(this.readFloatBE, this.readFloatLE, type, offset);
 	}
 
@@ -49,7 +54,7 @@ class BufferWrap {
 		return this._buffer.readInt16LE(offset);
 	}
 
-	readInt16 (offset, type=0) {
+	readInt16 (offset, type) {
 		return this.manageEndian(this.readInt16BE, this.readInt16LE, type, offset);
 	}
 
@@ -61,7 +66,7 @@ class BufferWrap {
 		return this._buffer.readInt32LE(offset);
 	}
 
-	readInt32 (offset, type=0) {
+	readInt32 (offset, type) {
 		return this.manageEndian(this.readInt32BE, this.readInt32LE, type, offset);
 	}
 
@@ -77,7 +82,7 @@ class BufferWrap {
 		return this._buffer.readUInt16LE(offset);
 	}
 
-	readUInt16 (offset, type=0) {
+	readUInt16 (offset, type) {
 		return this.manageEndian(this.readUInt16BE, this.readUInt16LE, type, offset);
 	}
 
@@ -89,7 +94,7 @@ class BufferWrap {
 		return this._buffer.readUInt32LE(offset);
 	}
 
-	readUInt32 (offset, type=0) {
+	readUInt32 (offset, type) {
 		return this.manageEndian(this.readUInt32BE, this.readUInt32LE, type, offset);
 	}
 
@@ -113,7 +118,7 @@ class BufferWrap {
 		return this._buffer.writeDoubleLE(value, offset);
 	}
 
-	writeDouble (value, offset, type=0) {
+	writeDouble (value, offset, type) {
 		return this.manageEndian(this.writeDoubleBE, this.writeDoubleLE, type, value, offset);
 	}
 
@@ -125,7 +130,7 @@ class BufferWrap {
 		return this._buffer.writeFloatLE(value, offset);
 	}
 
-	writeFloat (value, offset, type=0) {
+	writeFloat (value, offset, type) {
 		return this.manageEndian(this.writeFloatBE, this.writeFloatLE, type, value, offset);
 	}
 
@@ -141,7 +146,7 @@ class BufferWrap {
 		return this._buffer.writeInt16LE(value, offset);
 	}
 
-	writeInt16 (value, offset, type=0) {
+	writeInt16 (value, offset, type) {
 		return this.manageEndian(this.writeInt16BE, this.writeInt16LE, type, value, offset);
 	}
 
@@ -153,7 +158,7 @@ class BufferWrap {
 		return this._buffer.writeInt32LE(value, offset);
 	}
 
-	writeInt32 (value, offset, type=0) {
+	writeInt32 (value, offset, type) {
 		return this.manageEndian(this.writeInt32BE, this.writeInt32LE, type, value, offset);
 	}
 
@@ -169,7 +174,7 @@ class BufferWrap {
 		return this._buffer.writeUInt16LE(value, offset);
 	}
 
-	writeUInt16 (value, offset, type=0) {
+	writeUInt16 (value, offset, type) {
 		return this.manageEndian(this.writeUInt16BE, this.writeUInt16LE, type, value, offset);
 	}
 
@@ -181,7 +186,7 @@ class BufferWrap {
 		return this._buffer.writeUInt32LE(value, offset);
 	}
 
-	writeUInt32 (value, offset, type=0) {
+	writeUInt32 (value, offset, type) {
 		return this.manageEndian(this.writeUInt32BE, this.writeUInt32LE, type, value, offset);
 	}
 }
