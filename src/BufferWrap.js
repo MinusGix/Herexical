@@ -58,6 +58,7 @@ class BufferWrap {
 			return this.setEndian(0);
 		}
 
+		// TODO: with better error managing, make this less fatal but still dangerous. Perhaps a leveled 
 		Err.FatalError("BufferWrap#defaultEndian property was neither 0 (Big Endian) or 1 (Little Endian)!");
 	} 
 
