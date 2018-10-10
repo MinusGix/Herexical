@@ -30,6 +30,10 @@ class View {
 		this.loaded = false;
 	}
 
+	async init () {
+		await this.fileWrapper.init();
+	}
+
 	loadView () {
 		return this.fileWrapper.loadData(this.position, this.viewSize);
 	}
