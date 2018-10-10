@@ -34,3 +34,5 @@ class View {
 		return this.fileWrapper.loadData(this.position, this.viewSize);
 	}
 }
+
+module.exports = View;
