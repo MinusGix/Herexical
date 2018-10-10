@@ -55,3 +55,5 @@ class FileWrap {
 		}));
 	}
 }
+
+module.exports = FileWrap;
