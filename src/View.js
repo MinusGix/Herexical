@@ -34,8 +34,15 @@ class View {
 		await this.fileWrapper.init();
 	}
 
-	loadView () {
-		return this.fileWrapper.loadData(this.position, this.viewSize);
+	async loadView () {
+		if (this.loaded) {
+			return false; // the view has already been loaded, no need to reload it
+		}
+
+		await this.fileWrapper.loadData(this.position, this.viewSize);
+		this.loaded = true;
+		
+		return true;
 	}
 }
 
