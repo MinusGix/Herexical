@@ -63,7 +63,7 @@ const EventEmitter = require('events');
 class EditStorage extends EventEmitter {
 	constructor () {
 		super();
-		
+
 		this.settings = {};
 
 		// If a function to store a range of offsets is given something (offsetStart='019A2', offsetEnd='01000') then it's going back
@@ -72,6 +72,8 @@ class EditStorage extends EventEmitter {
 	}
 
 	async writeBuffer (offsetStart, buf) {
+		this.emit('writeBuffer', offsetStart, buf);
+		
 		let values = await this.getOffsetRange(offsetStart, offsetStart + buf.length);
 		
 		for (let i = 0; i < values.length; i++) {
@@ -83,11 +85,17 @@ class EditStorage extends EventEmitter {
 		return buf;
 	}
 
-	async optimize () {}
+	async optimize () {
+		this.emit('optimize');
+	}
 
-	async storeOffset (offset, value) {}
+	async storeOffset (offset, value) {
+		this.emit('storeOffset', offset, value);
+	}
 
 	async storeOffsetRange (offsetStart, offsetEnd, values) {
+		this.emit('storeOffsetRange', offsetStart, offsetEnd, value);
+
 		if (offsetStart > offsetEnd) {
 			if (this.settings.lenientOffsetRangeStorage) {
 				throw new RangeError("offsetStart was earlier than offsetEnd, not allowed.")
@@ -138,6 +146,8 @@ class EditStorage extends EventEmitter {
 	}
 
 	async storeOffsets (offsetList, values) {
+		this.emit('storeOffsets', offsetList, values);
+
 		const valuesIsArray = Array.isArray(values);
 
 		for (let i = 0; i < offsetList.length; i++) {
@@ -153,9 +163,13 @@ class EditStorage extends EventEmitter {
 		}
 	}
 
-	async getOffset (offset) {}
+	async getOffset (offset) {
+		this.emit('getOffset', offset);
+	}
 
 	async getOffsetRange (offsetStart, offsetEnd) {
+		this.emit('getOffsetRange', offsetStart, offsetEnd);
+
 		if (offsetStart > offsetEnd) {
 			if (this.settings.lenientOffsetRangeStorage) {
 				throw new RangeError("offsetStart was earlier than offsetEnd, not allowed.")
@@ -188,6 +202,8 @@ class EditStorage extends EventEmitter {
 	}
 
 	async getOffsets (offsetList) {
+		this.emit('getOffset', offsetList);
+
 		let values = [];
 
 		for (let i = 0; i < offsetList.length; i++) {
@@ -207,6 +223,8 @@ class ArrayOffsetEditStorage extends EditStorage {
 	}
 
 	async optimize () {
+		await super.optimize();
+
 		// Clone of data array, don't mutate it until optimization is done
 		let temp = this.data.slice(0);
 		let foundOffsets = {};
@@ -227,6 +245,8 @@ class ArrayOffsetEditStorage extends EditStorage {
 	}
 
 	async storeOffset (offset, value) {
+		await super.storeOffset(offset, value);
+
 		this.data.push([offset, value]);
 	}
 
@@ -242,6 +262,8 @@ class ArrayOffsetEditStorage extends EditStorage {
 	}
 
 	async getOffset (offset) {
+		await super.getOffset(offset);
+
 		const index = await this._getOffsetIndex(offset);
 
 		if (index === -1) {
@@ -260,10 +282,14 @@ class ObjectEditStorage extends EditStorage {
 	}
 
 	async storeOffset (offset, value) {
+		await super.storeOffset(offset, value);
+
 		this.data[offset] = value;
 	}
 
 	async getOffset (offset) {
+		await super.getOffset(offset);
+
 		if (!this.data.hasOwnProperty(offset)) {
 			return null;
 		} else {
