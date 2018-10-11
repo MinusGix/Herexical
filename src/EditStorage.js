@@ -255,3 +255,8 @@ class ObjectEditStorage extends EditStorage {
 		}
 	}
 }
+
+
+
+
+module.exports = ArrayOffsetEditStorage;
