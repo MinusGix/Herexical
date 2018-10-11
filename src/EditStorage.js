@@ -179,3 +179,37 @@ class EditStorage {
 		return values;
 	}
 }
+
+// Idea #1 [offset, value][]
+class ArrayOffsetEditStorage extends EditStorage {
+	constructor () {
+		super();
+
+		this.data = []; 
+	}
+
+	async storeOffset (offset, value) {
+		this.data.push([offset, value]);
+	}
+
+	// Unique to this, because not all implementations would have an index
+	async _getOffsetIndex (offset) {
+		for (let i = 0, len = this.data.length; i < len; i++) {
+			if (this.data[i][0] === offset) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	async getOffset (offset) {
+		const index = this._getOffsetIndex(offset);
+
+		if (index === -1) {
+			return null;
+		} else {
+			return this.data[index][1];
+		}
+	}
+}
