@@ -92,7 +92,8 @@ class FileWrap {
 				return reject(err);
 			}
 
-			resolve(buffer, bytesRead);
+			this.editStorage.writeBuffer(pos, buffer)
+				.then(buf => resolve(buf, bytesRead));
 		}));
 	}
 }
