@@ -68,8 +68,8 @@ class EditStorage {
 	}
 
 	async writeBuffer (offsetStart, buf) {
-		let values = this.getOffsetRange(offsetStart, offsetStart + buf.length);
-
+		let values = await this.getOffsetRange(offsetStart, offsetStart + buf.length);
+		
 		for (let i = 0; i < values.length; i++) {
 			if (values[i] !== null && values[i] !== undefined) {
 				buf[i] = values[i];
