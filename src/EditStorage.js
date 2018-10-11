@@ -238,7 +238,7 @@ class ArrayOffsetEditStorage extends EditStorage {
 	}
 
 	async getOffset (offset) {
-		const index = this._getOffsetIndex(offset);
+		const index = await this._getOffsetIndex(offset);
 
 		if (index === -1) {
 			return null;
