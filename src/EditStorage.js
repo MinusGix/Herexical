@@ -213,3 +213,23 @@ class ArrayOffsetEditStorage extends EditStorage {
 		}
 	}
 }
+
+class ObjectEditStorage extends EditStorage {
+	constructor () {
+		super();
+
+		this.data = {};
+	}
+
+	async storeOffset (offset, value) {
+		this.data[offset] = value;
+	}
+
+	async getOffset (offset) {
+		if (!this.data.hasOwnProperty(offset)) {
+			return null;
+		} else {
+			return this.data[offset];
+		}
+	}
+}
