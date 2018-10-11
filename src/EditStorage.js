@@ -67,6 +67,18 @@ class EditStorage {
 		this.settings.lenientOffsetRangeStorage = false;
 	}
 
+	async writeBuffer (offsetStart, buf) {
+		let values = this.getOffsetRange(offsetStart, offsetStart + buf.length);
+
+		for (let i = 0; i < values.length; i++) {
+			if (values[i] !== null && values[i] !== undefined) {
+				buf[i] = values[i];
+			}
+		}
+
+		return buf;
+	}
+
 	async optimize () {}
 
 	async storeOffset (offset, value) {}
