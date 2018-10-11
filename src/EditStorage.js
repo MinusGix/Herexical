@@ -190,6 +190,26 @@ class ArrayOffsetEditStorage extends EditStorage {
 		this.data = []; 
 	}
 
+	async optimize () {
+		// Clone of data array, don't mutate it until optimization is done
+		let temp = this.data.slice(0);
+		let foundOffsets = {};
+
+		for (let i = temp.length - 1; i >= 0; i--) {
+			const offset = temp[i][0];
+
+			// It's already been located, so this value is useless.
+			if (foundOffsets[offset]) {
+				temp.splice(i, 1);
+				i++; // Add to i because we just made the length shorter, so we'll accidently skip over a value
+			} else {
+				foundOffsets[offset] = true;
+			}
+		}
+
+		this.data = temp;
+	}
+
 	async storeOffset (offset, value) {
 		this.data.push([offset, value]);
 	}
