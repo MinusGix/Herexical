@@ -67,6 +67,8 @@ class EditStorage {
 		this.settings.lenientOffsetRangeStorage = false;
 	}
 
+	async optimize () {}
+
 	async storeOffset (offset, value) {}
 
 	async storeOffsetRange (offsetStart, offsetEnd, values) {
