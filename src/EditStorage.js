@@ -55,11 +55,15 @@
 			
 */
 
+const EventEmitter = require('events');
+
 // A class empty of actual storage functionality, a base class.
 // Most if not all of the methods should return a promise (or be async) so that implementations that do stuff like write to file or use a db
 //	can do that without need of modifying code
-class EditStorage {
+class EditStorage extends EventEmitter {
 	constructor () {
+		super();
+		
 		this.settings = {};
 
 		// If a function to store a range of offsets is given something (offsetStart='019A2', offsetEnd='01000') then it's going back
