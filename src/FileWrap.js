@@ -2,9 +2,12 @@ const fs = require('fs');
 const Err = require('./Error.js');
 const BufferWrap = require('./BufferWrap.js');
 const EditStorage = require('./EditStorage.js');
+const EventEmitter = require('events');
 
-class FileWrap {
+class FileWrap extends EventEmitter {
 	constructor (fileDir) {
+		super();
+
 		this._fileDir = fileDir;
 		this._loaded = new BufferWrap();
 		this.fd = null;
@@ -18,6 +21,8 @@ class FileWrap {
 	}
 
 	async init () {
+		this.emit('init:start');
+
 		try {
 			this.fd = await this._open();
 		} catch (err) {
@@ -25,6 +30,8 @@ class FileWrap {
 		}
 		
 		this.initialized = true;
+		
+		this.emit('init:done');
 	}
 
 	edit (offset, value) {
