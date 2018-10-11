@@ -1,12 +1,14 @@
 const fs = require('fs');
 const Err = require('./Error.js');
 const BufferWrap = require('./BufferWrap.js');
+const EditStorage = require('./EditStorage.js');
 
 class FileWrap {
 	constructor (fileDir) {
 		this._fileDir = fileDir;
 		this._loaded = new BufferWrap();
 		this.fd = null;
+		this.editStorage = new EditStorage();
 
 		this.initialized = false;
 	}
@@ -23,6 +25,18 @@ class FileWrap {
 		}
 		
 		this.initialized = true;
+	}
+
+	edit (offset, value) {
+		return this.editStorage.storeOffset(offset, value);
+	}
+
+	editRange (offsetStart, offsetEnd, values) {
+		return this.editStorage.storeOffsetRange(offsetStart, offsetEnd, values);
+	}
+
+	editOffsets (offsets, values) {
+		return this.editStorage.storeOffsets(offsets, values);
 	}
 
 	getStats () {
