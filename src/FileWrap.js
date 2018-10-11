@@ -28,6 +28,12 @@ class FileWrap extends EventEmitter {
 		} catch (err) {
 			Err.FatalError(err, "Opening file to retrieve file-descriptor failed.");
 		}
+
+		try {
+			this.editStorage.on('storeOffset', () => this.emit('edited'));
+		} catch (err) {
+			Err.FatalError(err, "Adding listener for storeOffset");
+		}
 		
 		this.initialized = true;
 		

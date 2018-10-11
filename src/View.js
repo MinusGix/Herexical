@@ -42,6 +42,12 @@ class View extends EventEmitter {
 
 		await this.fileWrapper.init();
 
+		this.fileWrapper.on('edited', () => {
+			this.loaded = false;
+
+			this.emit('unloaded');
+		});
+
 		this.emit('init:done');
 	}
 
@@ -56,7 +62,7 @@ class View extends EventEmitter {
 		this.loaded = true;
 		
 		this.emit('loadView:done');
-		
+
 		return true;
 	}
 }
