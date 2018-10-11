@@ -34,8 +34,8 @@ class View {
 		await this.fileWrapper.init();
 	}
 
-	async loadView () {
-		if (this.loaded) {
+	async loadView (force=false) {
+		if (this.loaded && !force) {
 			return false; // the view has already been loaded, no need to reload it
 		}
 
