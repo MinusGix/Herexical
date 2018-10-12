@@ -14,6 +14,7 @@ class FileWrap extends EventEmitter {
 		this.editStorage = new EditStorage();
 
 		this.initialized = false;
+		this.saving = false;
 	}
 
 	get loaded () {
@@ -38,6 +39,48 @@ class FileWrap extends EventEmitter {
 		this.initialized = true;
 		
 		this.emit('init:done');
+	}
+
+	async save () {
+		if (this.saving) {
+			throw new Error("Can't save while already saving.");
+		}
+
+		this.saving = true;
+
+		let size = await this.getSize(); // BigInt
+		let sizeLeft = Number(size);
+		console.log('Starting saving');
+		while (sizeLeft > 0) {
+			console.log('sizeLeft', sizeLeft);
+			let currentPieceSize = null;
+
+			if (sizeLeft > FileWrap.MAX_BUFFER_SIZE) {
+				console.log('sizeLeft was bigger than max buffer size');
+				currentPieceSize = Number(FileWrap.MAX_BUFFER_SIZE);
+			} else { // lower than, so this is also the last write we need to do
+				console.log('sizeLeft was lower than max buffer size');
+				currentPieceSize = sizeLeft;
+			}
+
+			console.log('currentPieceSize', currentPieceSize);
+			let buf = await this._loadData(sizeLeft - currentPieceSize, currentPieceSize);
+
+			console.log('loaded data', buf);
+			console.log('data length', buf.length);
+
+			await new Promise((resolve, reject) => fs.write(this.fd, buf, (err, writtenBytes, buffer) => {
+				if (err) {
+					reject(err);
+				}
+
+				resolve(buffer, writtenBytes);
+			}));
+
+			console.log('wrote data');
+
+			sizeLeft -= currentPieceSize;
+		}
 	}
 
 	edit (offset, value) {
