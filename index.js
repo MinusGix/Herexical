@@ -1,4 +1,5 @@
 const bignum = require('bignum');
+require('dot-env').config();
 
 const Err = require('./src/Error.js');
 const FileWrap = require('./src/FileWrap.js');
