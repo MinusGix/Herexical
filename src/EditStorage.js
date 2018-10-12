@@ -61,8 +61,10 @@ const EventEmitter = require('events');
 // Most if not all of the methods should return a promise (or be async) so that implementations that do stuff like write to file or use a db
 //	can do that without need of modifying code
 class EditStorage extends EventEmitter {
-	constructor () {
+	constructor (fileWrapper) {
 		super();
+
+		this.fileWrapper = fileWrapper;
 
 		this.settings = {};
 

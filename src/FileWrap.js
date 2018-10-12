@@ -11,7 +11,7 @@ class FileWrap extends EventEmitter {
 		this._fileDir = fileDir;
 		this._loaded = new BufferWrap();
 		this.fd = null;
-		this.editStorage = new EditStorage();
+		this.editStorage = new EditStorage(this);
 
 		this.initialized = false;
 		this.saving = false;
