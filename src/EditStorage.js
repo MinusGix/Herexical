@@ -56,6 +56,7 @@
 */
 
 const EventEmitter = require('events');
+const fs = require('fs');
 
 // A class empty of actual storage functionality, a base class.
 // Most if not all of the methods should return a promise (or be async) so that implementations that do stuff like write to file or use a db
@@ -71,6 +72,58 @@ class EditStorage extends EventEmitter {
 		// If a function to store a range of offsets is given something (offsetStart='019A2', offsetEnd='01000') then it's going back
 		// if it is lenient, then it will simply swap those two values, otherwise it won't
 		this.settings.lenientOffsetRangeStorage = false;
+	}
+
+	async save () {
+		if (this.fileWrapper.saving) {
+			throw new Error("Can't save while already saving.");
+		}
+
+		console.time('save');
+
+		await this._save();
+
+		console.timeEnd('save');
+	}
+
+	// Actual save function
+	async _save () {
+		this.fileWrapper.saving = true;
+
+		let sizeLeft = Number(await this.fileWrapper.getSize());
+		let currentPieceSize = 0;
+		let pos = 0;
+		const fd = this.fileWrapper.fd;
+		const FileWrap = this.fileWrapper.constructor; // Was having issues with just requiring it, probably the circular references to each other
+		
+		while (sizeLeft > 0) {
+			let hasEdits = await this.hasEdits();
+
+			if (!hasEdits) { // if there's no more edits, we don't need to mess with the rest of the file!
+				break;
+			}
+
+			if (sizeLeft > FileWrap.MAX_BUFFER_SIZE) {
+				currentPieceSize = Number(FileWrap.MAX_BUFFER_SIZE);
+			} else { // lower than, so this is also the last write we need to do
+				currentPieceSize = sizeLeft;
+			}
+
+			let buf = await this.fileWrapper._loadData(pos, currentPieceSize, true);
+			pos += currentPieceSize;
+			
+			await new Promise((resolve, reject) => fs.write(fd, buf, (err) => {
+				if (err) {
+					reject(err);
+				}
+
+				resolve();
+			}));
+
+			sizeLeft -= currentPieceSize;
+
+			console.timeEnd('save-loop');
+		}
 	}
 
 	async hasEdits () {
@@ -233,8 +286,8 @@ class EditStorage extends EventEmitter {
 
 // Idea #1 [offset, value][]
 class ArrayOffsetEditStorage extends EditStorage {
-	constructor () {
-		super();
+	constructor (fileWrapper) {
+		super(fileWrapper);
 
 		this.data = []; 
 	}
@@ -303,8 +356,8 @@ class ArrayOffsetEditStorage extends EditStorage {
 }
 
 class ObjectEditStorage extends EditStorage {
-	constructor () {
-		super();
+	constructor (fileWrapper) {
+		super(fileWrapper);
 
 		this.data = {};
 	}
