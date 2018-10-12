@@ -128,7 +128,7 @@ class FileWrap extends EventEmitter {
 		}));
 	}
 
-	_loadData (pos, length, fd=null) {
+	_loadData (pos, length, killEditStorage=false, fd=null) {
 		if (!this.initialized) {
 			return Err.FatalError("Attempt to load data without being initialized.");
 		}
@@ -148,7 +148,7 @@ class FileWrap extends EventEmitter {
 				return reject(err);
 			}
 
-			this.editStorage.writeBuffer(pos, buffer)
+			this.editStorage.writeBuffer(pos, buffer, killEditStorage)
 				.then(buf => resolve(buf, bytesRead));
 		}));
 	}

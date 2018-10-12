@@ -71,10 +71,13 @@ class EditStorage extends EventEmitter {
 		this.settings.lenientOffsetRangeStorage = false;
 	}
 
-	async writeBuffer (offsetStart, buf) {
+	// offsetStart - the start of the buf into the file buf[0] = file[offsetStart]
+	// buf - the buffer slice of the file
+	// killEditStorage - If it should remove values that are used. Used when saving, because if its saved then it doesn't need them anymore.
+	async writeBuffer (offsetStart, buf, killEditStorage=false) {
 		this.emit('writeBuffer', offsetStart, buf);
 		
-		let values = await this.getOffsetRange(offsetStart, offsetStart + buf.length);
+		let values = await this.getOffsetRange(offsetStart, offsetStart + buf.length, killEditStorage);
 		
 		for (let i = 0; i < values.length; i++) {
 			if (values[i] !== null && values[i] !== undefined) {
@@ -163,51 +166,51 @@ class EditStorage extends EventEmitter {
 		}
 	}
 
-	async getOffset (offset) {
-		this.emit('getOffset', offset);
+	async getOffset (offset, killEditStorage=false) {
+		this.emit('getOffset', offset, killEditStorage);
 	}
 
-	async getOffsetRange (offsetStart, offsetEnd) {
-		this.emit('getOffsetRange', offsetStart, offsetEnd);
+	async getOffsetRange (offsetStart, offsetEnd, killEditStorage=false) {
+		this.emit('getOffsetRange', offsetStart, offsetEnd, killEditStorage);
 
 		if (offsetStart > offsetEnd) {
 			if (this.settings.lenientOffsetRangeStorage) {
 				throw new RangeError("offsetStart was earlier than offsetEnd, not allowed.")
 			} else {
 				// Be lenient and just swap them around
-				return await this.getOffsetRange(offsetEnd, offsetStart);
+				return await this.getOffsetRange(offsetEnd, offsetStart, killEditStorage);
 			}
 		}
 
 		// This means that the start is the end. So there's only one value. A program that uses this might just call this whenever an edit is made
 		if (offsetStart === offsetEnd) {
 			// Wrap it in an array because this function normally returns an array
-			return [await this.getOffset(offsetStart)];
+			return [await this.getOffset(offsetStart, killEditStorage)];
 		}
 
-		return await this._getOffsetRange(offsetStart, offsetEnd);
+		return await this._getOffsetRange(offsetStart, offsetEnd, killEditStorage);
 	}
 
 	// This is getOffsetRange without any checks and is the actual code to grab the offset range
 	// Just look at _storeOffsetRange comments
 	// For instances that don't store each offset separately this will almost certainly have to be modified to be more efficient
-	async _getOffsetRange (offsetStart, offsetEnd) {
+	async _getOffsetRange (offsetStart, offsetEnd, killEditStorage=false) {
 		let values = [];
 
 		for (let currentOffset = offsetStart; currentOffset <= offsetEnd; currentOffset += 1) {
-			values.push(await this.getOffset(currentOffset));
+			values.push(await this.getOffset(currentOffset, killEditStorage));
 		}
 
 		return values;
 	}
 
-	async getOffsets (offsetList) {
-		this.emit('getOffset', offsetList);
+	async getOffsets (offsetList, killEditStorage=false) {
+		this.emit('getOffset', offsetList, killEditStorage);
 
 		let values = [];
 
 		for (let i = 0; i < offsetList.length; i++) {
-			values.push(await this.getOffset(offsetList[i]));
+			values.push(await this.getOffset(offsetList[i], killEditStorage));
 		}
 
 		return values;
@@ -261,15 +264,21 @@ class ArrayOffsetEditStorage extends EditStorage {
 		return -1;
 	}
 
-	async getOffset (offset) {
-		await super.getOffset(offset);
+	async getOffset (offset, killEditStorage=false) {
+		await super.getOffset(offset, killEditStorage);
 
 		const index = await this._getOffsetIndex(offset);
 
 		if (index === -1) {
 			return null;
 		} else {
-			return this.data[index][1];
+			let value = this.data[index][1];
+			
+			if (killEditStorage) {
+				this.data.splice(index, 1);
+			}
+
+			return value;
 		}
 	}
 }
@@ -287,13 +296,19 @@ class ObjectEditStorage extends EditStorage {
 		this.data[offset] = value;
 	}
 
-	async getOffset (offset) {
-		await super.getOffset(offset);
+	async getOffset (offset, killEditStorage=false) {
+		await super.getOffset(offset, killEditStorage);
 
 		if (!this.data.hasOwnProperty(offset)) {
 			return null;
 		} else {
-			return this.data[offset];
+			let value = this.data[offset];
+
+			if (killEditStorage) {
+				delete this.data[offset];
+			}
+
+			return value;
 		}
 	}
 }
