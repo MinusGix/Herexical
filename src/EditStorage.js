@@ -81,6 +81,10 @@ class EditStorage extends EventEmitter {
 	async writeBuffer (offsetStart, buf, killEditStorage=false) {
 		this.emit('writeBuffer', offsetStart, buf);
 
+		if (!(await this.hasEdits())) {
+			return buf;
+		}
+
 		let values = await this.getOffsetRange(offsetStart, offsetStart + buf.length, killEditStorage);
 		
 		for (let i = 0; i < values.length; i++) {
