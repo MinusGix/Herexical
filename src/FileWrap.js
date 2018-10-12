@@ -46,14 +46,28 @@ class FileWrap extends EventEmitter {
 			throw new Error("Can't save while already saving.");
 		}
 
+		console.time('save');
+
 		this.saving = true;
 
-		let size = await this.getSize(); // BigInt
-		let sizeLeft = Number(size);
+		let sizeLeft = Number(await this.getSize());
+		let currentPieceSize = 0;
+		let fd = this.fd;
+
 		console.log('Starting saving');
+		
 		while (sizeLeft > 0) {
+			let hasEdits = await this.editStorage.hasEdits();
+			console.log('hasEdits:', hasEdits);
+			console.log('Edits:', this.editStorage.data);
+
+			if (!hasEdits) { // if there's no more edits, we don't need to mess with the rest of the file!
+				break;
+			}
+
+			console.time('save-loop');
+			
 			console.log('sizeLeft', sizeLeft);
-			let currentPieceSize = null;
 
 			if (sizeLeft > FileWrap.MAX_BUFFER_SIZE) {
 				console.log('sizeLeft was bigger than max buffer size');
@@ -64,23 +78,27 @@ class FileWrap extends EventEmitter {
 			}
 
 			console.log('currentPieceSize', currentPieceSize);
-			let buf = await this._loadData(sizeLeft - currentPieceSize, currentPieceSize);
+			let buf = await this._loadData(sizeLeft - currentPieceSize, currentPieceSize, true);
 
 			console.log('loaded data', buf);
 			console.log('data length', buf.length);
 
-			await new Promise((resolve, reject) => fs.write(this.fd, buf, (err, writtenBytes, buffer) => {
+			await new Promise((resolve, reject) => fs.write(fd, buf, (err) => {
 				if (err) {
 					reject(err);
 				}
 
-				resolve(buffer, writtenBytes);
+				resolve();
 			}));
 
 			console.log('wrote data');
 
 			sizeLeft -= currentPieceSize;
+
+			console.timeEnd('save-loop');
 		}
+
+		console.timeEnd('save');
 	}
 
 	edit (offset, value) {
@@ -141,9 +159,7 @@ class FileWrap extends EventEmitter {
 			throw new RangeError("Attempted to construct buffer of larger than `" + FileWrap.MAX_BUFFER_SIZE + "` size.");
 		}
 
-		let buf = Buffer.alloc(length);
-
-		return new Promise((resolve, reject) => fs.read(fd, buf, 0, length, pos, (err, bytesRead, buffer) => {
+		return new Promise((resolve, reject) => fs.read(fd, Buffer.alloc(length), 0, length, pos, (err, bytesRead, buffer) => {
 			if (err) {
 				return reject(err);
 			}
@@ -155,6 +171,6 @@ class FileWrap extends EventEmitter {
 }
 
 FileWrap.MAX_BUFFER_SIZE = 1024n * 1024n // 1 MegaByte (1024 bytes * 1024 times = 1MB)
-	* 256n; // 256mb
+	//* 256n; // 256mb
 
 module.exports = FileWrap;

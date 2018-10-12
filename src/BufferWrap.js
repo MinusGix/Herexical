@@ -2,20 +2,16 @@ const Err = require('./Error.js');
 
 class BufferWrap {
 	constructor () {
-		this._buffer = null
+		this._buffer = null;
 		this.defaultEndian = 0; // Big Endian
 	}
 
 	resetBuffer () {
-		this._buffer = new Buffer(0);
-		
-		return this;
+		this._buffer = null;
 	}
 
 	clearBuffer () {
 		this._buffer.fill(0, 0, this._buffer.length);
-		
-		return this;
 	}
 
 	swapBuffer (buffer) {
@@ -26,8 +22,6 @@ class BufferWrap {
 		} else {
 			throw new TypeError("BufferWrap#swapBuffer given argument that was not an instance of Buffer or BufferWrap.");
 		}
-
-		return this;
 	}
 
 	setEndian (endian) {

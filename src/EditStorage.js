@@ -84,9 +84,10 @@ class EditStorage extends EventEmitter {
 		if (!(await this.hasEdits())) {
 			return buf;
 		}
-
-		let values = await this.getOffsetRange(offsetStart, offsetStart + buf.length, killEditStorage);
 		
+		const values = await this.getOffsetRange(offsetStart, offsetStart + buf.length, killEditStorage);
+		console.log('write buffer. killEditStorage:', killEditStorage, 'values length:', values.length);
+
 		for (let i = 0; i < values.length; i++) {
 			if (values[i] !== null && values[i] !== undefined) {
 				buf[i] = values[i];
@@ -180,7 +181,9 @@ class EditStorage extends EventEmitter {
 
 	async getOffsetRange (offsetStart, offsetEnd, killEditStorage=false) {
 		this.emit('getOffsetRange', offsetStart, offsetEnd, killEditStorage);
-
+		
+		console.log('getOffsetRange', offsetStart, offsetEnd, killEditStorage);
+		
 		if (offsetStart > offsetEnd) {
 			if (this.settings.lenientOffsetRangeStorage) {
 				throw new RangeError("offsetStart was earlier than offsetEnd, not allowed.")
@@ -192,6 +195,7 @@ class EditStorage extends EventEmitter {
 
 		// This means that the start is the end. So there's only one value. A program that uses this might just call this whenever an edit is made
 		if (offsetStart === offsetEnd) {
+			console.log('getOffsetRange - Single value');
 			// Wrap it in an array because this function normally returns an array
 			return [await this.getOffset(offsetStart, killEditStorage)];
 		}
@@ -203,16 +207,22 @@ class EditStorage extends EventEmitter {
 	// Just look at _storeOffsetRange comments
 	// For instances that don't store each offset separately this will almost certainly have to be modified to be more efficient
 	async _getOffsetRange (offsetStart, offsetEnd, killEditStorage=false) {
+		console.log('_getOffsetRange', offsetStart, offsetEnd, killEditStorage);
+
 		let values = [];
 
 		for (let currentOffset = offsetStart; currentOffset <= offsetEnd; currentOffset += 1) {
 			values.push(await this.getOffset(currentOffset, killEditStorage));
 		}
 
+		console.log('\t_getOffsetRange values length:', values.length);
+
 		return values;
 	}
 
 	async getOffsets (offsetList, killEditStorage=false) {
+		console.log('getOffsets', offsetList, killEditStorage);
+
 		this.emit('getOffset', offsetList, killEditStorage);
 
 		let values = [];
@@ -280,12 +290,14 @@ class ArrayOffsetEditStorage extends EditStorage {
 		await super.getOffset(offset, killEditStorage);
 
 		const index = await this._getOffsetIndex(offset);
+		
 
 		if (index === -1) {
 			return null;
 		} else {
 			let value = this.data[index][1];
 			
+			console.log('getOffset', killEditStorage);
 			if (killEditStorage) {
 				this.data.splice(index, 1);
 			}
