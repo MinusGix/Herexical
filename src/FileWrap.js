@@ -54,13 +54,9 @@ class FileWrap extends EventEmitter {
 		let currentPieceSize = 0;
 		let pos = 0;
 		let fd = this.fd;
-
-		console.log('Starting saving');
 		
 		while (sizeLeft > 0) {
 			let hasEdits = await this.editStorage.hasEdits();
-			console.log('hasEdits:', hasEdits);
-			console.log('Edits:', this.editStorage.data.length);
 
 			if (!hasEdits) { // if there's no more edits, we don't need to mess with the rest of the file!
 				break;
@@ -68,23 +64,15 @@ class FileWrap extends EventEmitter {
 
 			console.time('save-loop');
 			
-			console.log('sizeLeft', sizeLeft);
-
 			if (sizeLeft > FileWrap.MAX_BUFFER_SIZE) {
-				console.log('sizeLeft was bigger than max buffer size');
 				currentPieceSize = Number(FileWrap.MAX_BUFFER_SIZE);
 			} else { // lower than, so this is also the last write we need to do
-				console.log('sizeLeft was lower than max buffer size');
 				currentPieceSize = sizeLeft;
 			}
 
-			console.log('currentPieceSize', currentPieceSize);
 			let buf = await this._loadData(pos, currentPieceSize, true);
 			pos += currentPieceSize;
 			
-			console.log('loaded data', buf);
-			console.log('data length', buf.length);
-
 			await new Promise((resolve, reject) => fs.write(fd, buf, (err) => {
 				if (err) {
 					reject(err);
@@ -92,8 +80,6 @@ class FileWrap extends EventEmitter {
 
 				resolve();
 			}));
-
-			console.log('wrote data');
 
 			sizeLeft -= currentPieceSize;
 
