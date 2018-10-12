@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "bignum": "^0.13.0",
-    "dot-env": "0.0.1"
+    "dotenv": "^6.1.0"
   }
 }
