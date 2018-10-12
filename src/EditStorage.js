@@ -71,12 +71,16 @@ class EditStorage extends EventEmitter {
 		this.settings.lenientOffsetRangeStorage = false;
 	}
 
+	async hasEdits () {
+		return false;
+	}
+
 	// offsetStart - the start of the buf into the file buf[0] = file[offsetStart]
 	// buf - the buffer slice of the file
 	// killEditStorage - If it should remove values that are used. Used when saving, because if its saved then it doesn't need them anymore.
 	async writeBuffer (offsetStart, buf, killEditStorage=false) {
 		this.emit('writeBuffer', offsetStart, buf);
-		
+
 		let values = await this.getOffsetRange(offsetStart, offsetStart + buf.length, killEditStorage);
 		
 		for (let i = 0; i < values.length; i++) {
@@ -225,6 +229,10 @@ class ArrayOffsetEditStorage extends EditStorage {
 		this.data = []; 
 	}
 
+	async hasEdits () {
+		return this.data.length > 0;
+	}
+
 	async optimize () {
 		await super.optimize();
 
@@ -288,6 +296,16 @@ class ObjectEditStorage extends EditStorage {
 		super();
 
 		this.data = {};
+	}
+
+	async hasEdits () {
+		for (let key in this.data) {
+			if (this.data.hasOwnProperty(key)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	async storeOffset (offset, value) {
