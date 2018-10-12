@@ -86,11 +86,11 @@ class EditStorage extends EventEmitter {
 		}
 		
 		const values = await this.getOffsetRange(offsetStart, offsetStart + buf.length, killEditStorage);
-		console.log('write buffer. killEditStorage:', killEditStorage, 'values length:', values.length);
+		console.log('write buffer. killEditStorage:', killEditStorage, 'values length:', Object.keys(values).length);
 
-		for (let i = 0; i < values.length; i++) {
-			if (values[i] !== null && values[i] !== undefined) {
-				buf[i] = values[i];
+		for (let key in values) {
+			if (values[key] !== null && values[key] !== undefined) {
+				buf[key] = values[key];
 			}
 		}
 
@@ -197,7 +197,7 @@ class EditStorage extends EventEmitter {
 		if (offsetStart === offsetEnd) {
 			console.log('getOffsetRange - Single value');
 			// Wrap it in an array because this function normally returns an array
-			return [await this.getOffset(offsetStart, killEditStorage)];
+			return { [offsetStart]: await this.getOffset(offsetStart, killEditStorage) };
 		}
 
 		return await this._getOffsetRange(offsetStart, offsetEnd, killEditStorage);
@@ -209,13 +209,17 @@ class EditStorage extends EventEmitter {
 	async _getOffsetRange (offsetStart, offsetEnd, killEditStorage=false) {
 		console.log('_getOffsetRange', offsetStart, offsetEnd, killEditStorage);
 
-		let values = [];
+		let values = {};
 
 		for (let currentOffset = offsetStart; currentOffset <= offsetEnd; currentOffset += 1) {
-			values.push(await this.getOffset(currentOffset, killEditStorage));
+			let result = await this.getOffset(currentOffset, killEditStorage);
+			
+			if (result !== null) {
+				values[currentOffset] = result;
+			}
 		}
 
-		console.log('\t_getOffsetRange values length:', values.length);
+		console.log('\t_getOffsetRange values length:', Object.keys(values).length);
 
 		return values;
 	}
@@ -279,6 +283,7 @@ class ArrayOffsetEditStorage extends EditStorage {
 	async _getOffsetIndex (offset) {
 		for (let i = 0, len = this.data.length; i < len; i++) {
 			if (this.data[i][0] === offset) {
+				console.log('\t_getOffsetIndex found', offset);
 				return i;
 			}
 		}

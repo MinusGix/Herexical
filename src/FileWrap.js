@@ -52,6 +52,7 @@ class FileWrap extends EventEmitter {
 
 		let sizeLeft = Number(await this.getSize());
 		let currentPieceSize = 0;
+		let pos = 0;
 		let fd = this.fd;
 
 		console.log('Starting saving');
@@ -59,7 +60,7 @@ class FileWrap extends EventEmitter {
 		while (sizeLeft > 0) {
 			let hasEdits = await this.editStorage.hasEdits();
 			console.log('hasEdits:', hasEdits);
-			console.log('Edits:', this.editStorage.data);
+			console.log('Edits:', this.editStorage.data.length);
 
 			if (!hasEdits) { // if there's no more edits, we don't need to mess with the rest of the file!
 				break;
@@ -78,8 +79,9 @@ class FileWrap extends EventEmitter {
 			}
 
 			console.log('currentPieceSize', currentPieceSize);
-			let buf = await this._loadData(sizeLeft - currentPieceSize, currentPieceSize, true);
-
+			let buf = await this._loadData(pos, currentPieceSize, true);
+			pos += currentPieceSize;
+			
 			console.log('loaded data', buf);
 			console.log('data length', buf.length);
 
