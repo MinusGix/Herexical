@@ -50,12 +50,15 @@ function logTime (name, ...args) {
 function timeStart (name) {
 	if (process.env.HERX_TIME_LOGGING) {
 		Times[name] = Date.now();
+		Log('[TIMING]', name);
+		increaseIndent();
 	}
 }
 
 function timeEnd (name, ...args) {
 	if (process.env.HERX_TIME_LOGGING) {
-		Log('[TIMING]', name, '-', Date.now() - Times[name], 'ms -', ...args);
+		decreaseIndent();
+		Log('[/TIMING]', name, '-', Date.now() - Times[name], 'ms -', ...args);
 		delete Times[name];
 	}
 }
