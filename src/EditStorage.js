@@ -363,17 +363,19 @@ class ArrayOffsetEditStorage extends EditStorage {
 		let foundOffsets = {};
 
 		for (let i = temp.length - 1; i >= 0; i--) {
-			const offset = temp[i][0];
+			if (!temp[i]) {
+				break;
+			}
 
-			// It's already been located, so this value is useless.
+			let offset = temp[i][0];
+
 			if (foundOffsets[offset]) {
 				temp.splice(i, 1);
-				i++; // Add to i because we just made the length shorter, so we'll accidently skip over a value
 			} else {
 				foundOffsets[offset] = true;
 			}
 		}
-
+		
 		this.data = temp;
 
 		Log.timeEnd('ArrayOffsetEditStorage-optimize');
