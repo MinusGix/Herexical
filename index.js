@@ -15,6 +15,7 @@ module.exports = {
 	BufferWrap,
 	EditStorage,
 	View,
+	Log,
 };
 
 Log.info('Index.js finished.');

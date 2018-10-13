@@ -2,6 +2,9 @@ const FileWrap = require('./FileWrap.js');
 const BufferWrap = require('./BufferWrap.js');
 const Err = require('./Error.js');
 const EventEmitter = require('events');
+const Log = require('./Log.js');
+
+Log.timeStart('Loading-View');
 
 class View extends EventEmitter {
 	constructor (file) {
@@ -38,6 +41,7 @@ class View extends EventEmitter {
 	}
 
 	async init () {
+		Log.timeStart('View-Init');
 		this.emit('init:start');
 
 		await this.fileWrapper.init();
@@ -49,6 +53,7 @@ class View extends EventEmitter {
 		});
 
 		this.emit('init:done');
+		Log.timeEnd('View-Init');
 	}
 
 	async loadView (force=false) {
@@ -56,15 +61,19 @@ class View extends EventEmitter {
 			return false; // the view has already been loaded, no need to reload it
 		}
 
+		Log.timeStart('View-loadView');
 		this.emit('loadView:start');
 
 		await this.fileWrapper.loadData(this.position, this.viewSize);
 		this.loaded = true;
 		
 		this.emit('loadView:done');
+		Log.timeEnd('View-loadView');
 
 		return true;
 	}
 }
 
 module.exports = View;
+
+Log.timeEnd('Loading-View');

@@ -57,6 +57,10 @@
 
 const EventEmitter = require('events');
 const fs = require('fs');
+const Log = require('./Log.js');
+
+Log.timeStart('Loading-EditStorage-all');
+Log.timeStart('Loading-EditStorage');
 
 // A class empty of actual storage functionality, a base class.
 // Most if not all of the methods should return a promise (or be async) so that implementations that do stuff like write to file or use a db
@@ -79,11 +83,11 @@ class EditStorage extends EventEmitter {
 			throw new Error("Can't save while already saving.");
 		}
 
-		console.time('save');
+		Log.timeStart('EditStorage-save');
 
 		await this._save();
 
-		console.timeEnd('save');
+		Log.timeEnd('EditStorage-save', this.constructor.name);
 	}
 
 	// Actual save function
@@ -112,6 +116,7 @@ class EditStorage extends EventEmitter {
 			let buf = await this.fileWrapper._loadData(pos, currentPieceSize, true);
 			pos += currentPieceSize;
 			
+			Log.timeStart('_save fs.write');
 			await new Promise((resolve, reject) => fs.write(fd, buf, (err) => {
 				if (err) {
 					reject(err);
@@ -119,10 +124,9 @@ class EditStorage extends EventEmitter {
 
 				resolve();
 			}));
+			Log.timeEnd('_save fs.write');
 
 			sizeLeft -= currentPieceSize;
-
-			console.timeEnd('save-loop');
 		}
 	}
 
@@ -134,9 +138,12 @@ class EditStorage extends EventEmitter {
 	// buf - the buffer slice of the file
 	// killEditStorage - If it should remove values that are used. Used when saving, because if its saved then it doesn't need them anymore.
 	async writeBuffer (offsetStart, buf, killEditStorage=false) {
+		Log.timeStart('writeBuffer');
 		this.emit('writeBuffer', offsetStart, buf);
 
 		if (!(await this.hasEdits())) {
+			Log.timeEnd('writeBuffer');
+
 			return buf;
 		}
 		
@@ -148,6 +155,7 @@ class EditStorage extends EventEmitter {
 			}
 		}
 
+		Log.timeEnd('writeBuffer');
 		return buf;
 	}
 
@@ -160,6 +168,7 @@ class EditStorage extends EventEmitter {
 	}
 
 	async storeOffsetRange (offsetStart, offsetEnd, values) {
+		Log.timeStart('storeOffsetRange');
 		this.emit('storeOffsetRange', offsetStart, offsetEnd, value);
 
 		if (offsetStart > offsetEnd) {
@@ -187,9 +196,11 @@ class EditStorage extends EventEmitter {
 				value = values;
 			}
 
+			Log.timeEnd('storeOffsetRange');
 			return await this.storeOffset(offsetStart, value);
 		}
 
+		Log.timeEnd('storeOffsetRange');
 		return await this._storeOffsetRange(offsetStart, offsetEnd, values);
 	}
 
@@ -198,6 +209,8 @@ class EditStorage extends EventEmitter {
 	// But an instance that is more efficient and stores offset ranges itself would want to modify this rather than storeOffsetRange
 	async _storeOffsetRange (offsetStart, offsetEnd, values) {
 		// Adds each and every offset from offsetStart and offsetEnd.
+
+		Log.timeStart('_storeOffsetRange');
 
 		const valuesIsArray = Array.isArray(values);
 
@@ -209,6 +222,8 @@ class EditStorage extends EventEmitter {
 				await this.storeOffset(n, values);
 			}
 		}
+
+		Log.timeEnd('_storeOffsetRange')
 	}
 
 	async storeOffsets (offsetList, values) {
@@ -234,12 +249,17 @@ class EditStorage extends EventEmitter {
 	}
 
 	async getOffsetRange (offsetStart, offsetEnd, killEditStorage=false) {
+		Log.timeStart('getOffsetRange');
 		this.emit('getOffsetRange', offsetStart, offsetEnd, killEditStorage);
 				
 		if (offsetStart > offsetEnd) {
 			if (this.settings.lenientOffsetRangeStorage) {
+				Log.timeEnd('getOffsetRange', 'error', offsetStart, offsetEnd, killEditStorage);
+
 				throw new RangeError("offsetStart was earlier than offsetEnd, not allowed.")
 			} else {
+				Log.timeEnd('getOffsetRange', 'swapping', offsetStart, offsetEnd, killEditStorage);
+
 				// Be lenient and just swap them around
 				return await this.getOffsetRange(offsetEnd, offsetStart, killEditStorage);
 			}
@@ -247,17 +267,24 @@ class EditStorage extends EventEmitter {
 
 		// This means that the start is the end. So there's only one value. A program that uses this might just call this whenever an edit is made
 		if (offsetStart === offsetEnd) {
+			Log.timeEnd('getOffsetRange', 'same-start-end', offsetStart, offsetEnd, killEditStorage);
 			// Wrap it in an array because this function normally returns an array
 			return { [offsetStart]: await this.getOffset(offsetStart, killEditStorage) };
 		}
 
-		return await this._getOffsetRange(offsetStart, offsetEnd, killEditStorage);
+		const val = await this._getOffsetRange(offsetStart, offsetEnd, killEditStorage);
+
+		Log.timeEnd('getOffsetRange', offsetStart, offsetEnd, killEditStorage);
+
+		return val;
 	}
 
 	// This is getOffsetRange without any checks and is the actual code to grab the offset range
 	// Just look at _storeOffsetRange comments
 	// For instances that don't store each offset separately this will almost certainly have to be modified to be more efficient
 	async _getOffsetRange (offsetStart, offsetEnd, killEditStorage=false) {
+		Log.timeStart('_getOffsetRange');
+
 		let values = {};
 
 		for (let currentOffset = offsetStart; currentOffset <= offsetEnd; currentOffset += 1) {
@@ -268,10 +295,13 @@ class EditStorage extends EventEmitter {
 			}
 		}
 
+		Log.timeEnd('_getOffsetRange', offsetStart, offsetEnd, killEditStorage);
+
 		return values;
 	}
 
 	async getOffsets (offsetList, killEditStorage=false) {
+		Log.timeStart('getOffsets');
 		this.emit('getOffset', offsetList, killEditStorage);
 
 		let values = [];
@@ -280,9 +310,15 @@ class EditStorage extends EventEmitter {
 			values.push(await this.getOffset(offsetList[i], killEditStorage));
 		}
 
+		Log.timeEnd('getOffsets', offsetList.length, killEditStorage);
+
 		return values;
 	}
 }
+
+Log.timeEnd('Loading-EditStorage');
+
+Log.timeStart('Loading-ArrayOffsetEditStorage');
 
 // Idea #1 [offset, value][]
 class ArrayOffsetEditStorage extends EditStorage {
@@ -297,6 +333,8 @@ class ArrayOffsetEditStorage extends EditStorage {
 	}
 
 	async optimize () {
+		Log.timeStart('ArrayOffsetEditStorage-optimize');
+
 		await super.optimize();
 
 		// Clone of data array, don't mutate it until optimization is done
@@ -316,6 +354,8 @@ class ArrayOffsetEditStorage extends EditStorage {
 		}
 
 		this.data = temp;
+
+		Log.timeEnd('ArrayOffsetEditStorage-optimize');
 	}
 
 	async storeOffset (offset, value) {
@@ -354,6 +394,10 @@ class ArrayOffsetEditStorage extends EditStorage {
 		}
 	}
 }
+
+Log.timeEnd('Loading-ArrayOffsetEditStorage');
+
+Log.timeStart('Loading-ObjectEditStorage');
 
 class ObjectEditStorage extends EditStorage {
 	constructor (fileWrapper) {
@@ -395,7 +439,10 @@ class ObjectEditStorage extends EditStorage {
 	}
 }
 
+Log.timeEnd('Loading-ObjectEditStorage');
 
 
 
 module.exports = ArrayOffsetEditStorage;
+
+Log.timeEnd('Loading-EditStorage-all');

@@ -3,6 +3,9 @@ const Err = require('./Error.js');
 const BufferWrap = require('./BufferWrap.js');
 const EditStorage = require('./EditStorage.js');
 const EventEmitter = require('events');
+const Log = require('./Log.js');
+
+Log.timeStart('Loading-FileWrap');
 
 class FileWrap extends EventEmitter {
 	constructor (fileDir) {
@@ -22,6 +25,7 @@ class FileWrap extends EventEmitter {
 	}
 
 	async init () {
+		Log.timeStart('FileWrap-init');
 		this.emit('init:start');
 
 		try {
@@ -39,6 +43,7 @@ class FileWrap extends EventEmitter {
 		this.initialized = true;
 		
 		this.emit('init:done');
+		Log.timeEnd('FileWrap-init');
 	}
 
 	save () {
@@ -58,6 +63,8 @@ class FileWrap extends EventEmitter {
 	}
 
 	getStats () {
+		Log.timeStart('FileWrap-getStats');
+
 		return new Promise((resolve, reject) => fs.stat(this._fileDir, {
 			bigint: true, // get the numbers in BigInt
 		}, (err, stats) => {
@@ -65,6 +72,7 @@ class FileWrap extends EventEmitter {
 				return reject(err);
 			}
 
+			Log.timeEnd('FileWrap-getStats');
 			resolve(stats);
 		}));
 	}
@@ -81,11 +89,14 @@ class FileWrap extends EventEmitter {
 
 
 	_open () {
+		Log.timeStart('FileWrap-_open');
+
 		return new Promise((resolve, reject) => fs.open(this._fileDir, 'r+', (err, fd) => {
 			if (err) {
 				throw err;
 			}
 
+			Log.timeEnd('FileWrap-_open');
 			resolve(fd);
 		}));
 	}
@@ -103,10 +114,14 @@ class FileWrap extends EventEmitter {
 			throw new RangeError("Attempted to construct buffer of larger than `" + FileWrap.MAX_BUFFER_SIZE + "` size.");
 		}
 
+		Log.timeStart('FileWrap-_loadData');
+
 		return new Promise((resolve, reject) => fs.read(fd, Buffer.alloc(length), 0, length, pos, (err, bytesRead, buffer) => {
 			if (err) {
 				return reject(err);
 			}
+
+			Log.timeEnd('FileWrap-_loadData');
 
 			this.editStorage.writeBuffer(pos, buffer, killEditStorage)
 				.then(buf => resolve(buf, bytesRead));
@@ -118,3 +133,5 @@ FileWrap.MAX_BUFFER_SIZE = 1024n * 1024n // 1 MegaByte (1024 bytes * 1024 times 
 	//* 256n; // 256mb
 
 module.exports = FileWrap;
+
+Log.timeEnd('Loading-FileWrap');

@@ -1,4 +1,7 @@
 const Err = require('./Error.js');
+const Log = require('./Log.js');
+
+Log.timeStart('Loading-BufferWrap');
 
 class BufferWrap {
 	constructor () {
@@ -242,5 +245,7 @@ class BufferWrap {
 		return this.manageEndian(this.writeUInt32BE, this.writeUInt32LE, type, value, offset);
 	}
 }
+
+Log.timeEnd('Loading-BufferWrap');
 
 module.exports = BufferWrap;
