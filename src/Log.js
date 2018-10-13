@@ -95,6 +95,8 @@ function checkIndent () {
 	}
 }
 
+populateIndentLevels();
+
 module.exports = {
 	raw: Log,
 	debug: logDebug,
