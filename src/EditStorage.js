@@ -98,18 +98,13 @@ class EditStorage extends EventEmitter {
 		let sizeLeft = Number(await this.fileWrapper.getSize());
 		let currentPieceSize = 0;
 		let pos = 0;
+		// Preload these so we aren't doing the access several times
 		const fd = this.fileWrapper.fd;
-		const FileWrap = this.fileWrapper.constructor; // Was having issues with just requiring it, probably the circular references to each other
-		
-		while (sizeLeft > 0) {
-			let hasEdits = await this.hasEdits();
+		const maxBufferSize = Number(this.fileWrapper.constructor.MAX_BUFFER_SIZE);
 
-			if (!hasEdits) { // if there's no more edits, we don't need to mess with the rest of the file!
-				break;
-			}
-
-			if (sizeLeft > FileWrap.MAX_BUFFER_SIZE) {
-				currentPieceSize = Number(FileWrap.MAX_BUFFER_SIZE);
+		while (sizeLeft > 0 && (await this.hasEdits())) {
+			if (sizeLeft > maxBufferSize) {
+				currentPieceSize = maxBufferSize;
 			} else { // lower than, so this is also the last write we need to do
 				currentPieceSize = sizeLeft;
 			}
