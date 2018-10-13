@@ -58,6 +58,7 @@ function timeEnd (name, ...args) {
 module.exports = {
 	raw: Log,
 	debug: logDebug,
+	info: logInfo,
 	error: logError,
 	time: logTime,
 	timeStart: timeStart,
