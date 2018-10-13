@@ -55,7 +55,7 @@ function timeStart (name) {
 
 function timeEnd (name, ...args) {
 	if (process.env.HERX_TIME_LOGGING) {
-		Log('[TIMING]', name, '-', Date.now() - Times[name], '-', ...args);
+		Log('[TIMING]', name, '-', Date.now() - Times[name], 'ms -', ...args);
 		delete Times[name];
 	}
 }
