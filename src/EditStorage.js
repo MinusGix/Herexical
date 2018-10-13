@@ -362,6 +362,8 @@ class ArrayOffsetEditStorage extends EditStorage {
 		let temp = this.data.slice(0);
 		let foundOffsets = {};
 
+		Log.info('Data size before:', temp.length);
+
 		for (let i = temp.length - 1; i >= 0; i--) {
 			if (!temp[i]) {
 				break;
@@ -375,6 +377,9 @@ class ArrayOffsetEditStorage extends EditStorage {
 				foundOffsets[offset] = true;
 			}
 		}
+		foundOffsets = null;
+
+		Log.info('Data size after:', temp.length);
 		
 		this.data = temp;
 
