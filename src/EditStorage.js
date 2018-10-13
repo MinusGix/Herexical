@@ -78,12 +78,17 @@ class EditStorage extends EventEmitter {
 		this.settings.lenientOffsetRangeStorage = false;
 	}
 
-	async save () {
+	async save (optimize=true) {
 		if (this.fileWrapper.saving) {
 			throw new Error("Can't save while already saving.");
 		}
 
 		Log.timeStart('EditStorage-save');
+
+		if (optimize) {
+			// Optimize it so that the saving can go faster. In some cases this might actually make it go
+			await this.optimize();
+		}
 
 		await this._save();
 
