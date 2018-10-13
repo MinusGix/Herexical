@@ -91,6 +91,7 @@ class EditStorage extends EventEmitter {
 	}
 
 	// Actual save function
+	// 500 - 800ms on write in first 1mb of _TestLarge.bin
 	async _save () {
 		this.fileWrapper.saving = true;
 
@@ -330,6 +331,26 @@ class ArrayOffsetEditStorage extends EditStorage {
 
 	async hasEdits () {
 		return this.data.length > 0;
+	}
+
+	// 10-20ms on 500bytes
+	async _save () {
+		this.fileWrapper.saving = true;
+
+		const fd = this.fileWrapper.fd;
+		const buffer = Buffer.alloc(1);
+
+		while (await this.hasEdits()) {
+			buffer[0] = await this.getOffset(this.data[0][0], true);
+			
+			await new Promise((resolve, reject) => fs.write(fd, buffer, err => {
+				if (err) {
+					return reject(err);
+				}
+
+				resolve();
+			}));
+		}
 	}
 
 	async optimize () {
