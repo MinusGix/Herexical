@@ -7,7 +7,7 @@ function Log (...args) {
 		const logTo = process.env.HERX_LOG_TO;
 
 		if (logTo === 'console' || logTo === 'console&file') {
-			console.log(...args);
+			console.log(getIndent(), ...args);
 		}
 
 		if (logTo === 'file' || logTo === 'console&file') {
@@ -62,6 +62,15 @@ function timeEnd (name, ...args) {
 
 function _getIndent (level=0) {
 	return '\t'.repeat(level);
+}
+
+function getIndent () {
+	if (indentLevel in indentLevels) {
+		return indentLevels[indentLevel];
+	}
+
+	Log.info('Inefficient call to get indent with level', indentLevel);
+	return _getIndent(indentLevel);
 }
 
 // Essentially preload them. I imagine array access is faster than repeated .repeat calls when there's lots of logging
