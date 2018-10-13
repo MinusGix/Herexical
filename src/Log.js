@@ -1,6 +1,6 @@
 let indentLevel = 0;
 
-const indentLevels = [];
+let indentLevels = [];
 
 function Log (...args) {
 	if (process.env.HERX_SHOULD_LOG) {
