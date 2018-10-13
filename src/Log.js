@@ -93,6 +93,11 @@ function decreaseIndent (amount=1) {
 	checkIndent();
 }
 
+function setIndent (value=0) {
+	indentLevel = indentLevel;
+	checkIndent();
+}
+
 // Check if the input is out of bounds
 function checkIndent () {
 	if (indentLevel < 0) {
@@ -113,5 +118,9 @@ module.exports = {
 	error: logError,
 	time: logTime,
 	timeStart: timeStart,
-	timeEnd: timeEnd
+	timeEnd: timeEnd,
+
+	increaseIndent,
+	decreaseIndent,
+	setIndent,
 };
