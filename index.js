@@ -1,6 +1,7 @@
 const bignum = require('bignum');
 require('dotenv').config();
 
+const Log = require('./src/Log.js');
 const Err = require('./src/Error.js');
 const FileWrap = require('./src/FileWrap.js');
 const BufferWrap = require('./src/BufferWrap.js');
@@ -15,3 +16,5 @@ module.exports = {
 	EditStorage,
 	View,
 };
+
+Log.info('Index.js finished.');

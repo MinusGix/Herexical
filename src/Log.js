@@ -1,3 +1,7 @@
+let indentLevel = 0;
+
+const indentLevels = [];
+
 function Log (...args) {
 	if (process.env.HERX_SHOULD_LOG) {
 		const logTo = process.env.HERX_LOG_TO;
@@ -8,6 +12,7 @@ function Log (...args) {
 
 		if (logTo === 'file' || logTo === 'console&file') {
 			// TODO: log to file in HERX_LOG_FILE here
+			// Just doing fs.write a lot would be slow, wouldn't it?
 		}
 	}
 }
@@ -52,6 +57,41 @@ function timeEnd (name, ...args) {
 	if (process.env.HERX_TIME_LOGGING) {
 		Log('[TIMING]', name, '-', Date.now() - Times[name], '-', ...args);
 		delete Times[name];
+	}
+}
+
+function _getIndent (level=0) {
+	return '\t'.repeat(level);
+}
+
+// Essentially preload them. I imagine array access is faster than repeated .repeat calls when there's lots of logging
+// This is probably a premature optimization
+function populateIndentLevels () {
+	indentLevels = [];
+
+	for (let i = 0; i <= process.env.HERX_MAX_INDENT_LEVEL; i++) {
+		indentLevels.push(_getIndent(i));
+	}
+}
+
+function increaseIndent (amount=1) {
+	indentLevel++;
+	checkIndent();
+}
+
+function decreaseIndent (amount=1) {
+	indentLevel--;
+	checkIndent();
+}
+
+// Check if the input is out of bounds
+function checkIndent () {
+	if (indentLevel < 0) {
+		indentLevel = 0;
+	}
+
+	if (indentLevel > process.env.HERX_MAX_INDENT_LEVEL) {
+		indentLevel = process.env.HERX_MAX_INDENT_LEVEL;
 	}
 }
 
