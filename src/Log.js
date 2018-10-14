@@ -1,6 +1,37 @@
+const fs = require('fs');
+const Err = require('./Error.js');
+const util = require('util');
+
 let indentLevel = 0;
 
 let indentLevels = [];
+
+let logFileName;
+let logFileFD;
+
+function constructLogFile () {
+	// Uses a process.env
+	logFileName = process.env.HERX_LOG_FILE.replace(/\{date\}/g, Date.now().toString());
+
+	// Rather than use a promise here, or the callback on async version, we want to make sure this is created before we start logging
+	logFileFD = fs.openSync(logFileName, 'a');
+}
+
+function writeLogFile (...args) {
+	if (!logFileName) {
+		constructLogFile();
+	}
+
+	args.push('\n');
+
+	return new Promise((resolve, reject) => fs.write(logFileFD, args.map(arg => util.format(arg)).join(' '), (err) => {
+		if (err) {
+			return reject(err);
+		}
+
+		resolve();
+	}));
+}
 
 function Log (...args) {
 	if (process.env.HERX_SHOULD_LOG) {
@@ -11,8 +42,7 @@ function Log (...args) {
 		}
 
 		if (logTo === 'file' || logTo === 'console&file') {
-			// TODO: log to file in HERX_LOG_FILE here
-			// Just doing fs.write a lot would be slow, wouldn't it?
+			writeLogFile(getIndent(), ...args);
 		}
 	}
 }
