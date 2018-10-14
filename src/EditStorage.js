@@ -213,14 +213,14 @@ class EditStorage extends EventEmitter {
 
 		Log.timeStart('_storeOffsetRange');
 
-		const valuesIsArray = Array.isArray(values);
+		const valuesIsObj = typeof(values) === 'object' && values !== null;
 
 		for (let currentOffset = offsetStart; currentOffset <= offsetEnd; currentOffset += 1) {
-			if (valuesIsArray) {
+			if (valuesIsObj) {
 				if (currentOffset in values) {
 					await this.storeOffset(n, values[currentOffset]);
 				} else {
-					Log.trace('[WARN] ' + toString(currentOffset) + ' was not in the values array.');
+					Log.trace('[WARN] ' + toString(currentOffset) + ' was not in the values array/object.');
 				}
 			} else {
 				await this.storeOffset(n, values);
