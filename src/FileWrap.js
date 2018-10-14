@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Err = require('./Error.js');
 const BufferWrap = require('./BufferWrap.js');
-const EditStorage = require('./EditStorage.js');
+const EditStorage = require('./EditStorage.js')(); // load the default EditStorage
 const EventEmitter = require('events');
 const Log = require('./Log.js');
 
