@@ -216,9 +216,12 @@ class EditStorage extends EventEmitter {
 		const valuesIsArray = Array.isArray(values);
 
 		for (let currentOffset = offsetStart; currentOffset <= offsetEnd; currentOffset += 1) {
-			// TODO: add some complaining if the current index doesn't exist in the array
 			if (valuesIsArray) {
-				await this.storeOffset(n, values[currentOffset]);
+				if (currentOffset in values) {
+					await this.storeOffset(n, values[currentOffset]);
+				} else {
+					Log.trace('[WARN] ' + toString(currentOffset) + ' was not in the values array.');
+				}
 			} else {
 				await this.storeOffset(n, values);
 			}
