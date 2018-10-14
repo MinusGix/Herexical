@@ -65,6 +65,12 @@ function logError (...args) {
 	}
 }
 
+function logWarn (...args) {
+	if (process.env.HERX_WARN_LOGGING) {
+		Log('[WARN]', ...args);
+	}
+}
+
 let Times = {};
 
 function logTime (name, ...args) {
