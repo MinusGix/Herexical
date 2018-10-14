@@ -155,6 +155,7 @@ module.exports = {
 	debug: logDebug,
 	info: logInfo,
 	error: logError,
+	warn: logWarn,
 	time: logTime,
 	timeStart: timeStart,
 	timeEnd: timeEnd,
