@@ -167,83 +167,83 @@ class BufferWrap {
 		return BufUtil.writeString(this._buffer, str, offset, encoding);
 	}
 
-	writeDoubleBE (value, offset) {
-		return this.writeDouble(value, offset, ENDIAN.BIG);
+	writeDoubleBE (offset, value) {
+		return this.writeDouble(offset, value, ENDIAN.BIG);
 	}
 
-	writeDoubleLE (value, offset) {
-		return this.writeDouble(value, offset, ENDIAN.BIG);
+	writeDoubleLE (offset, value) {
+		return this.writeDouble(offset, value, ENDIAN.BIG);
 	}
 
-	writeDouble (value, offset, endian) {
+	writeDouble (offset, value, endian) {
 		return BufUtil.writeDouble(this._buffer, offset, value, endian);
 	}
 
-	writeFloatBE (value, offset) {
-		return this.writeFloat(value, offset, ENDIAN.BIG);
+	writeFloatBE (offset, value) {
+		return this.writeFloat(offset, value, ENDIAN.BIG);
 	}
 
-	writeFloatLE (value, offset) {
-		return this.writeFloat(value, offset, ENDIAN.LITTLE);
+	writeFloatLE (offset, value) {
+		return this.writeFloat(offset, value, ENDIAN.LITTLE);
 	}
 
-	writeFloat (value, offset, endian) {
+	writeFloat (offset, value, endian) {
 		return BufUtil.writeFloat(this._buffer, offset, value, endian);
 	}
 
-	writeInt8 (value, offset) {
+	writeInt8 (offset, value) {
 		return BufUtil.writeInt8(this._buffer, offset, value);
 	}
 
-	writeInt16BE (value, offset) {
-		return this.writeInt16(value, offset, ENDIAN.BIG);
+	writeInt16BE (offset, value) {
+		return this.writeInt16(offset, value, ENDIAN.BIG);
 	}
 
-	writeInt16LE (value, offset) {
-		return this.writeInt16(value, offset, ENDIAN.LITTLE);
+	writeInt16LE (offset, value) {
+		return this.writeInt16(offset, value, ENDIAN.LITTLE);
 	}
 
-	writeInt16 (value, offset, endian) {
+	writeInt16 (offset, value, endian) {
 		return BufUtil.writeInt16(this._buffer, offset, value, endian);
 	}
 
-	writeInt32BE (value, offset) {
-		return this.writeInt32(value, offset, ENDIAN.BIG);
+	writeInt32BE (offset, value) {
+		return this.writeInt32(offset, value, ENDIAN.BIG);
 	}
 
-	writeInt32LE(value, offset) {
-		return this.writeInt32(value, offset, ENDIAN.LITTLE);
+	writeInt32LE(offset, value) {
+		return this.writeInt32(offset, value, ENDIAN.LITTLE);
 	}
 
-	writeInt32 (value, offset, endian) {
+	writeInt32 (offset, value, endian) {
 		return BufUtil.writeInt32(this._buffer, offset, value, endian);
 	}
 
-	writeUInt8 (value, offset) {
+	writeUInt8 (offset, value) {
 		return BufUtil.writeUInt8(this._buffer, offset, value);
 	}
 
-	writeUInt16BE (value, offset) {
-		return this.writeUInt16(value, offset, ENDIAN.BIG);
+	writeUInt16BE (offset, value) {
+		return this.writeUInt16(offset, value, ENDIAN.BIG);
 	}
 
-	writeUInt16LE (value, offset) {
-		return this.writeUInt16(value, offset, ENDIAN.LITTLE);
+	writeUInt16LE (offset, value) {
+		return this.writeUInt16(offset, value, ENDIAN.LITTLE);
 	}
 
-	writeUInt16 (value, offset, endian) {
+	writeUInt16 (offset, value, endian) {
 		return BufUtil.writeUInt16(this._buffer, offset, value, endian);
 	}
 
-	writeUInt32BE (value, offset) {
-		return this.writeUInt32(value, offset, ENDIAN.LITTLE);
+	writeUInt32BE (offset, value) {
+		return this.writeUInt32(offset, value, ENDIAN.LITTLE);
 	}
 
-	writeUInt32LE(value, offset) {
-		return this.writeUInt32(value, offset, ENDIAN.LITTLE);
+	writeUInt32LE(offset, value) {
+		return this.writeUInt32(offset, value, ENDIAN.LITTLE);
 	}
 
-	writeUInt32 (value, offset, endian) {
+	writeUInt32 (offset, value, endian) {
 		return BufUtil.writeUInt32(this._buffer, offset, value, endian);
 	}
 }
