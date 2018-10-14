@@ -47,6 +47,20 @@ function Log (...args) {
 	}
 }
 
+function logMemoryUsage () {
+	const used = process.memoryUsage();
+	
+	Log('[MEM]');
+	increaseIndent();
+
+	for (let key in used) {
+		Log(`${key} ${Math.round(used[key] / 1024 / 1024 * 100) / 100} MB`);
+	}
+	
+	decreaseIndent();
+	Log('[/MEM]');
+}
+
 function logDebug (...args) {
 	if (process.env.HERX_DEBUG_LOGGING) {
 		Log('[DEBUG]', ...args);
@@ -166,6 +180,8 @@ module.exports = {
 	time: logTime,
 	timeStart: timeStart,
 	timeEnd: timeEnd,
+
+	memoryUsage: logMemoryUsage,
 
 	increaseIndent,
 	decreaseIndent,
