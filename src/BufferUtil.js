@@ -4,6 +4,11 @@
 
 const BufferWrap = require('./BufferWrap.js');
 
+const ENDIAN = {
+	BIG: 0,
+	LITTLE: 1,
+};
+
 // Might modify this later to return the buffer property of BufferWrap if I feel it is needed
 // Does feel like a waste to check instanceof a ton of times when you're gonna have to call these funcs a lot
 function getBuffer (buf) {
@@ -19,9 +24,9 @@ function clearBuffer (buf) {
 }
 
 function manageEndian (bigEndianFunction, littleEndianFunction, endian) {
-	if (endian === 0) {
+	if (endian === ENDIAN.BIG) {
 		return bigEndianFunction;
-	} else if (endian === 1) {
+	} else if (endian === ENDIAN.LITTLE) {
 		return littleEndianFunction;
 	}
 
@@ -270,6 +275,8 @@ function writeUInt32LE (buf, offset, value) {
 }
 
 module.exports = {
+	ENDIAN,
+
 	values,
 	valuesArray,
 	
