@@ -71,6 +71,12 @@ function logWarn (...args) {
 	}
 }
 
+function logTrace (name, ...args) {
+	if (process.env.HERX_TRACE_LOGGING) {
+		Log('[TRACE]', (new Error(name)).stack, ...args);
+	}
+}
+
 let Times = {};
 
 function logTime (name, ...args) {
@@ -156,6 +162,7 @@ module.exports = {
 	info: logInfo,
 	error: logError,
 	warn: logWarn,
+	trace: logTrace,
 	time: logTime,
 	timeStart: timeStart,
 	timeEnd: timeEnd,
