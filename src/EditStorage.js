@@ -181,6 +181,7 @@ class EditStorage extends EventEmitter {
 			}
 		}
 
+		// TODO: perhaps change this to valuesIsObj like _storeOffsetRange
 		const valuesIsArray = Array.isArray(values);
 
 		if (isArray && values.length === 1) {
