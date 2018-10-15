@@ -5,6 +5,7 @@ const EditStorage = require('./EditStorage.js')(); // load the default EditStora
 const EventEmitter = require('events');
 const Log = require('./Log.js');
 const Idle = require('./Idle.js');
+const BufUtil = require('./BufferUtil.js');
 
 Log.timeStart('Loading-FileWrap');
 
@@ -50,6 +51,86 @@ class FileWrap extends EventEmitter {
 		
 		this.emit('init:done');
 		Log.timeEnd('FileWrap-init');
+	}
+
+	// Returns an [searchValueStartOffset, searchValueEndOffset][]
+	async search (type='string', value) {
+		Log.timeStart('search');
+
+		let results;
+
+		if (type === 'string' || type === 'str') {
+			results = await this.searchString(value);
+		} else if (type === 'hex' || type === 'hexadecimal') {
+			results = await this.searchHexArray(value);
+		} else if (type === 'buffer' || type === 'buf') {
+			results = await this.searchHexBuffer(value);
+		} else {
+			Log.timeEnd('search', 'err');
+
+			throw TypeError("Unknown type given, was given: '" + type + "'");
+		}
+
+		Log.timeEnd('search', 'resultCount:', results.length);
+
+		return results;
+	}
+
+	async searchString (searchString) {
+		return await this.searchHexArray(searchString.split('').map(chr => chr.charCodeAt(0)));
+	}
+
+	async searchHexArray (hexArr) {
+		let results = [];
+		let offset = 0;
+		// TODO: add some form of math to calculate a good view size. We don't want to load too much into memory 
+		//	if they're searching a really long string but we don't want to load too little if they're using a small number
+		let searchSize = hexArr.length;
+		let viewSize = searchSize * 64;
+		let fileSize = await this.getSize();
+
+		let buf;
+		let hexPos = 0;
+		let searchPos = 0;
+
+		while (offset < fileSize) {
+			buf = await this._loadData(offset, viewSize);
+
+			hexPos = 0;
+			searchPos = 0;
+
+			const walk = () => {
+				// If this is true, then it's matched all of them
+				if (hexPos === searchSize) {
+					results.push([offset + searchPos, offset + searchPos + searchSize -1]);
+					hexPos = 0;
+					searchPos++;
+				}
+
+				if (hexArr[hexPos] === buf[searchPos + hexPos]) {
+					hexPos++;
+				} else {
+					hexPos = 0;
+					searchPos++;
+				}
+
+				if (searchPos >= buf.length) {
+					return;
+				}
+
+				return walk();
+			};
+
+			walk();
+
+			offset += viewSize;
+		}
+
+		return results;
+	}
+
+	async searchHexBuffer (buf) {
+		return this.searchHexArray(BufUtil.valuesArray(buf));
 	}
 
 	save () {
