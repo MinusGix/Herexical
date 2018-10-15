@@ -4,6 +4,7 @@ const BufferWrap = require('./BufferWrap.js');
 const EditStorage = require('./EditStorage.js')(); // load the default EditStorage
 const EventEmitter = require('events');
 const Log = require('./Log.js');
+const Idle = require('./Idle.js');
 
 Log.timeStart('Loading-FileWrap');
 
@@ -18,6 +19,11 @@ class FileWrap extends EventEmitter {
 
 		this.initialized = false;
 		this.saving = false;
+
+		this._idleSize = Idle.AsyncIdle(() => 
+			this.getStats()
+			.then(stats => stats.size)
+		);
 	}
 
 	get loaded () {
@@ -83,8 +89,7 @@ class FileWrap extends EventEmitter {
 	}
 
 	getSize () {
-		return this.getStats()
-			.then(stats => stats.size) // BigInt
+		return this._idleSize();
 	}
 
 
