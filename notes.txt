@@ -7,3 +7,6 @@ On 32bit archs it is (2^30)-1 (~1GB)
 On 64bit archs it is (2^31)-1 (~2GB)
 
 Nodejs complains when I try making a too long buffer into a string. (1GB file filled with nul `buf.toString('hex')`) 'Error: Cannot create a string longer than 0x3fffffe7 characters'
+
+Just realized that BigInt isn't just a 64bit number, it's arbitrary bit number!
+BigInt.asUintN(width, BigInt) -> BigInt.asUintN(128, -1) is for wrapped them between the values. nice. It seems to go really high, testing BigInt.asUintN(65536, -1), was slow but it worked. (Well I assume the insanely huge value it gave me was correct)
