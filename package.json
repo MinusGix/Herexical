@@ -11,7 +11,6 @@
   "license": "ISC",
   "dependencies": {
     "bigint-buffer": "^1.1.2",
-    "bignum": "^0.13.0",
     "dotenv": "^6.1.0"
   }
 }

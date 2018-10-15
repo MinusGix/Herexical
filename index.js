@@ -1,4 +1,3 @@
-const bignum = require('bignum');
 require('dotenv').config();
 
 const Log = require('./src/Log.js');
@@ -9,7 +8,6 @@ const EditStorage = require('./src/EditStorage.js');
 const View = require('./src/View.js');
 
 module.exports = {
-	bignum,
 	Err,
 	FileWrap,
 	BufferWrap,
