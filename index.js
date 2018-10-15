@@ -6,6 +6,7 @@ const FileWrap = require('./src/FileWrap.js');
 const BufferWrap = require('./src/BufferWrap.js');
 const EditStorage = require('./src/EditStorage.js');
 const View = require('./src/View.js');
+const BufferUtil = require('./src/BufferUtil.js');
 
 module.exports = {
 	Err,
@@ -14,6 +15,7 @@ module.exports = {
 	EditStorage,
 	View,
 	Log,
+	BufferUtil,
 };
 
 Log.info('Index.js finished.');
