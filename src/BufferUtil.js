@@ -3,6 +3,7 @@
 */
 
 const BufferWrap = require('./BufferWrap.js');
+const BigIntBuffer = require('bigint-buffer');
 
 const ENDIAN = {
 	BIG: 0,
@@ -274,6 +275,34 @@ function writeUInt32LE (buf, offset, value) {
 	return buf.writeUInt32LE(value, offset);
 }
 
+
+// BigInt functions, separate just to keep it simpler
+
+function readBigInt (buf, offset, size=8, endian) {
+	return manageEndian(readBigIntBE, readBigIntLE, endian)(buf, offset, size);
+}
+
+function readBigIntBE (buf, offset, size=8) {
+	buf = getBuffer(buf);
+	
+	return BigIntBuffer.toBigIntBE(buf.slice(offset, offset + size));
+}
+
+function readBigIntLE (buf, offset, size=8) {
+	buf = getBuffer(buf);
+
+	return BigIntBuffer.toBigIntLE(buf.slice(offset, offset + size));
+}
+
+function readInt64 (buf, offset, endian) {
+	return BigInt.asIntN(64, readBigInt(buf, offset, 8, endian));
+}
+
+function readUInt64 (buf, offset, endian) {
+	return BigInt.asUintN(64, readBigInt(buf, offset, 8, endian));
+}
+
+
 module.exports = {
 	ENDIAN,
 
@@ -294,6 +323,11 @@ module.exports = {
 	readUInt16,
 	readInt32,
 	readUInt32,
+
+	// 64bit
+	readBigInt,
+	readInt64,
+	readUInt64,
 	
 	writeDouble,
 	writeFloat,
