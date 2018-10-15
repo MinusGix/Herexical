@@ -81,7 +81,28 @@ class FileWrap extends EventEmitter {
 	}
 
 	async searchHexArray (hexArr) {
+		// Since we know this generator will eventually end we can just grab all of them.
+		// I would prefer if this wasn't used, and the generator was used as needed.
 		let results = [];
+		let iter = this.searchHexArrayGenerator(hexArr);
+
+		// TODO: Bleh, while(true) should be changed to something less likely to trap itself in eternal purgatory
+		while (true) {
+			let res = await iter.next();
+			
+			// the last value does not have the done prop 
+			if (res.done) {
+				break;
+			}
+
+			results.push(res.value);
+		}
+
+		// It seems that I can't just do [...iter] like a normal iterator since this is async
+		return results;
+	}
+
+	async * searchHexArrayGenerator (hexArr) {
 		let offset = 0;
 		// TODO: add some form of math to calculate a good view size. We don't want to load too much into memory 
 		//	if they're searching a really long string but we don't want to load too little if they're using a small number
@@ -101,7 +122,8 @@ class FileWrap extends EventEmitter {
 
 			while (searchPos < buf.length) {
 				if (hexPos === searchSize) {
-					results.push([offset + searchPos, offset + searchPos + searchSize - 1]);
+					yield [offset + searchPos, offset + searchPos + searchSize - 1];
+
 					hexPos = 0;
 					searchPos++;
 				}
@@ -116,8 +138,6 @@ class FileWrap extends EventEmitter {
 			
 			offset += viewSize;
 		}
-
-		return results;
 	}
 
 	async searchHexBuffer (buf) {
