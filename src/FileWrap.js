@@ -120,8 +120,16 @@ class FileWrap extends EventEmitter {
 			if (err) {
 				return reject(err);
 			}
-			
+
 			Log.info('bytesRead', bytesRead);
+
+			// Since the Buffer is allocated to the size given, if there isn't data (such as reading near the end of the file) it will be filled with 00's
+			// This slices it so that it is only what is actually visible
+			if (buffer.length !== bytesRead) {
+				Log.info("Buffer.length", buffer.length, "bytesRead", bytesRead);
+				buffer = buffer.slice(0, bytesRead);
+				Log.info("Buffer.length now", buffer.length);
+			}
 
 			Log.timeEnd('FileWrap-_loadData');
 
