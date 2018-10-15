@@ -99,10 +99,9 @@ class FileWrap extends EventEmitter {
 			hexPos = 0;
 			searchPos = 0;
 
-			const walk = () => {
-				// If this is true, then it's matched all of them
+			while (searchPos < buf.length) {
 				if (hexPos === searchSize) {
-					results.push([offset + searchPos, offset + searchPos + searchSize -1]);
+					results.push([offset + searchPos, offset + searchPos + searchSize - 1]);
 					hexPos = 0;
 					searchPos++;
 				}
@@ -113,16 +112,8 @@ class FileWrap extends EventEmitter {
 					hexPos = 0;
 					searchPos++;
 				}
-
-				if (searchPos >= buf.length) {
-					return;
-				}
-
-				return walk();
-			};
-
-			walk();
-
+			}
+			
 			offset += viewSize;
 		}
 
