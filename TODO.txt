@@ -17,7 +17,6 @@
 		- The user could run a command to tell it to highlight a structure (have names given to them) and it will try highlighting at their current positions
 		- This could be implemented in the main Herexical code, and just have data which can tell the clients which are selected. Perhaps once/if I make it modular
 - Add some caching mechanism to prevent repeated calls to functions that are unlikely to change. (Such as FileWrap#getSize)
-- Add a method to read/write 64bit numbers
 - Add a method to read/write 128bit numbers
 -? Add a method to read/write arbitrary bit numbers? Would make this a whole lot easier
 - Add search function to FileWrap. Perhaps load a multiple of the length of the values. You search for 0x0ABC it will load data in multiples of four bytes, searching for it. and return the positions of each instance.
