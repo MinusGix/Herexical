@@ -120,6 +120,8 @@ class FileWrap extends EventEmitter {
 			if (err) {
 				return reject(err);
 			}
+			
+			Log.info('bytesRead', bytesRead);
 
 			Log.timeEnd('FileWrap-_loadData');
 
