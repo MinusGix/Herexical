@@ -35,3 +35,5 @@
 	- Have it also accept regex? That makes it more complicated.
 	- Case sensitivity options
 	- Search for string or hex values
+- Add a function to expand file. Expand a file by X Bytes. Would need a special EditStorage code or something
+- Add a function to fully delete part of file. Would need a special EditStorage code or something
