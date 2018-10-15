@@ -18,8 +18,7 @@
 		- This could be implemented in the main Herexical code, and just have data which can tell the clients which are selected. Perhaps once/if I make it modular
 - Add a method to read/write 128bit numbers
 -? Add a method to read/write arbitrary bit numbers? Would make this a whole lot easier
-- Add search function to FileWrap. Perhaps load a multiple of the length of the values. You search for 0x0ABC it will load data in multiples of four bytes, searching for it. and return the positions of each instance.
-- Make the code more modular. Create a module system so that it only loads on EditStorage at a time unless needed too and other things.
+- Make the code more modular.
 - Add method to get byte in binary to BufferUtil and View data function
 - Add funcs to get Float (32 and 64?) and Double in view data func
 - Add a function to get the FileWrap's file name (rather than the dir it's in)
@@ -37,3 +36,5 @@
 	- Search for string or hex values
 - Add a function to expand file. Expand a file by X Bytes. Would need a special EditStorage code or something
 - Add a function to fully delete part of file. Would need a special EditStorage code or something
+- Add a utility function to get all values out of an iter and asynciter
+	- Then implement that on the search generators to make a bit less repeated code
