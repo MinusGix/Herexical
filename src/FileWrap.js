@@ -80,6 +80,10 @@ class FileWrap extends EventEmitter {
 		return await this.searchHexArray(searchString.split('').map(chr => chr.charCodeAt(0)));
 	}
 
+	async searchStringGenerator (searchString) {
+		return this.searchHexArrayGenerator(searchString.split('').map(chr => chr.charCodeAt(0)));
+	}
+
 	async searchHexArray (hexArr) {
 		// Since we know this generator will eventually end we can just grab all of them.
 		// I would prefer if this wasn't used, and the generator was used as needed.
@@ -142,6 +146,10 @@ class FileWrap extends EventEmitter {
 
 	async searchHexBuffer (buf) {
 		return this.searchHexArray(BufUtil.valuesArray(buf));
+	}
+
+	async searchHexBufferGenerator (buf) {
+		return this.searchHexArrayGenerator(BufUtil.valuesArray(buf));
 	}
 
 	save () {
