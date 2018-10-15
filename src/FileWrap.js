@@ -76,6 +76,29 @@ class FileWrap extends EventEmitter {
 		return results;
 	}
 
+	// Returns an iterator for [searchValueStartOffset, searchValueEndOffset]
+	async searchGenerator (type='string', value) {
+		Log.timeStart('search-generator');
+
+		let iter;
+
+		if (type === 'string' || type === 'str') {
+			iter = await this.searchStringGenerator(value);
+		} else if (type === 'hex' || type === 'hexadecimal') {
+			iter = await this.searchHexArrayGenerator(value);
+		} else if (type === 'buffer' || type === 'buf') {
+			iter = await this.searchHexBufferGenerator(value);
+		} else {
+			Log.timeEnd('search-generator', 'err');
+
+			throw TypeError("Unknown type given, was given: '" + type + "'");
+		}
+
+		Log.timeEnd('search-generator');
+
+		return iter;
+	}
+
 	async searchString (searchString) {
 		return await this.searchHexArray(searchString.split('').map(chr => chr.charCodeAt(0)));
 	}
