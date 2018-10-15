@@ -3,6 +3,7 @@ const BufferWrap = require('./BufferWrap.js');
 const Err = require('./Error.js');
 const EventEmitter = require('events');
 const Log = require('./Log.js');
+const BufUtil = require('./BufferUtil.js');
 
 Log.timeStart('Loading-View');
 
@@ -95,8 +96,8 @@ class View extends EventEmitter {
 			Int32: await this._getInt32(0, endian, area),
 			UInt32: await this._getUInt32(0, endian, area),
 
-			Int64: null, // Needs Int64 support
-			UInt64: null,
+			Int64: await this._getInt64(offset, endian, area), // Needs Int64 support
+			UInt64: await this._getUInt64(offset, endian, area),
 
 			Float32: null, // There is a buffer readFloat(BE|LE) function but I want to make sure before using it
 			Float64: null, // Needs float64 support
@@ -185,6 +186,24 @@ class View extends EventEmitter {
 		} else {
 			return area.readUInt32LE(offset);
 		}
+	}
+
+	async _getInt64 (offset, endian=0, area=null) {
+		if (area === null) {
+			area = await this.fileWrapper._loadData(offset, 8);
+			offset = 0;
+		}
+
+		return BufUtil.readInt64(area, offset, endian);
+	}
+
+	async _getUInt64 (offset, endian=0, area=null) {
+		if (area === null) {
+			area = await this.fileWrapper._loadData(offset, 8);
+			offset = 0;
+		}
+
+		return BufUtil.readUInt64(area, offset, endian);
 	}
 }
 
