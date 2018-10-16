@@ -26,6 +26,8 @@ class FileWrap extends EventEmitter {
 			this.getStats()
 			.then(stats => stats.size)
 		);
+
+		this._idleName = Idle.Idle(() => path.basename(this._fileDir));
 	}
 
 	get loaded () {
@@ -56,7 +58,7 @@ class FileWrap extends EventEmitter {
 
 	// Returns the name of the file, because the fileDir is likely to have other path info on it
 	getFilename () {
-		return path.basename(this._fileDir);
+		return this._idleName();
 	}
 
 	// Returns an [searchValueStartOffset, searchValueEndOffset][]
