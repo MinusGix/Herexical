@@ -24,7 +24,6 @@
 		- Thus a 64 bit measure should be made. Will have to use some big number library as BigInts are well Integers
 - Make a function to get a lot of constant data (such as file size and filename)
 - Add BufferUtil func to get a byte as a string in different encodings
-- Add a func to get the offset of a specific byte into the file (currentViewPos + offsetIntoBuffer should work)
 - Have module functions that are only included if need be? It's not like they'll have much of an impact on the filesize/memusage if they're unused, so maybe not?
 - Add a setting to View if it can unload (aka set the current loaded buffer to null and hope the GC gets it) while it's not being viewed
 	- requires adding a variable that tells the View if it's being viewed that the UI Designer uses

@@ -57,6 +57,20 @@ class View extends EventEmitter {
 		Log.timeEnd('View-Init');
 	}
 
+	// Returns the offset into a file of the offset into the currently loaded buffer
+	getFileOffset (bufferOffset) {
+		if (typeof(bufferOffset) !== 'number') {
+			throw new TypeError("bufferOffset param was not a number.");
+		}
+
+		// They've modified viewSize or position, so I can't accurately determine where it's from
+		if (!this.loaded) {
+			return null;
+		}
+
+		return this.position + bufferOffset;
+	}
+
 	async loadView (force=false) {
 		if (this.loaded && !force) {
 			return false; // the view has already been loaded, no need to reload it
