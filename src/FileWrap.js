@@ -107,19 +107,36 @@ class FileWrap extends EventEmitter {
 		return iter;
 	}
 
-	async searchString (searchString) {
-		return await this.searchHexArray(searchString.split('').map(chr => chr.charCodeAt(0)));
+	async searchString (searchString, caseSensitive=true) {
+		return await this.searchHexArray(searchString.split('').map(chr => chr.charCodeAt(0)), this.__getNoCaseSensitivityMatch(caseSensitive));
 	}
 
-	async searchStringGenerator (searchString) {
-		return this.searchHexArrayGenerator(searchString.split('').map(chr => chr.charCodeAt(0)));
+	// A very internal function, like the insides of an organ. This will almost certainly be removed when I make these search funcs less repetitive
+	__getNoCaseSensitivityMatch (caseSensitive) {
+		if (caseSensitive) {
+			return undefined; // No need for a special func, the normal comparing byte values will work
+		} else {
+			// Note: if I ever switch over to codePoint or some other function in searching strings this will need to be updated
+			return (storedVal, searchVal) => {
+				const chr = String.fromCharCode(searchVal);
+
+				// Have to test both uppercase and lowercase as I don't know which one searchVal is.
+				return searchVal === storedVal || 
+					chr.toUpperCase().charCodeAt(0) === storedVal || 
+					chr.toLowerCase().charCodeAt(0) === storedVal;
+			};
+		}
 	}
 
-	async searchHexArray (hexArr) {
+	async searchStringGenerator (searchString, caseSensitive=true) {
+		return this.searchHexArrayGenerator(searchString.split('').map(chr => chr.charCodeAt(0)), this.__getNoCaseSensitivityMatch(caseSensitive));
+	}
+
+	async searchHexArray (hexArr, isMatch) {
 		// Since we know this generator will eventually end we can just grab all of them.
 		// I would prefer if this wasn't used, and the generator was used as needed.
 		let results = [];
-		let iter = this.searchHexArrayGenerator(hexArr);
+		let iter = this.searchHexArrayGenerator(hexArr, isMatch);
 
 		// TODO: Bleh, while(true) should be changed to something less likely to trap itself in eternal purgatory
 		while (true) {
