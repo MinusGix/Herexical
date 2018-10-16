@@ -31,7 +31,6 @@
 	-? Add a func to loop over buffer data like they're rows. (Like, how a UI might have space for 28 bytes, so it gives all 28 at once and maybe offset?) This would make it easier for ui's
 - Add Find and Replace function
 - Add regex option to Search (and Find and Replace if it's implemented)
-- Add case sensitivity option to searchString/searchStringGenerator (2 searches, then merge arrays? No. that wouldn't work exactly. Might need custom search func)
 - Add a function to expand file. Expand a file by X Bytes. Would need a special EditStorage code or something
 - Add a function to fully delete part of file. Would need a special EditStorage code or something
 - Add a utility function to get all values out of an iter and asynciter
