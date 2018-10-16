@@ -312,11 +312,11 @@ function readArbBitUInt (buf, offset, bitCount, endian) {
 }
 
 function readInt64 (buf, offset, endian) {
-	return BigInt.asIntN(64, readBigInt(buf, offset, 8, endian));
+	return readArbBitInt(buf, offset, 64, endian);
 }
 
 function readUInt64 (buf, offset, endian) {
-	return BigInt.asUintN(64, readBigInt(buf, offset, 8, endian));
+	return readArbBitUInt(but, offset, 64, endian);
 }
 
 
