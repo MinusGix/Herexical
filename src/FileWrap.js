@@ -137,7 +137,11 @@ class FileWrap extends EventEmitter {
 		return results;
 	}
 
-	async * searchHexArrayGenerator (hexArr) {
+	async * searchHexArrayGenerator (hexArr, isMatch) {
+		if (typeof(isMatch) !== 'function') {
+			isMatch = (storedVal, searchVal) => storedVal === searchVal;
+		}
+
 		let offset = 0;
 		// TODO: add some form of math to calculate a good view size. We don't want to load too much into memory 
 		//	if they're searching a really long string but we don't want to load too little if they're using a small number
@@ -163,7 +167,7 @@ class FileWrap extends EventEmitter {
 					searchPos++;
 				}
 
-				if (hexArr[hexPos] === buf[searchPos + hexPos]) {
+				if (isMatch(hexArr[hexPos], buf[searchPos + hexPos])) {
 					hexPos++;
 				} else {
 					hexPos = 0;
