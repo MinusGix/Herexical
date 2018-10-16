@@ -304,11 +304,11 @@ function _readArbBit (buf, offset, bitCount, endian) {
 }
 
 function readArbBitInt (buf, offset, bitCount, endian) {
-	return BigInt.asIntN(_readArbBit(buf, offset, bitCount, endian));
+	return BigInt.asIntN(bitCount, _readArbBit(buf, offset, bitCount, endian));
 }
 
 function readArbBitUInt (buf, offset, bitCount, endian) {
-	return BigInt.asUintN(_readArbBit(buf, offset, bitCount, endian));
+	return BigInt.asUintN(bitCount, _readArbBit(buf, offset, bitCount, endian));
 }
 
 function readInt64 (buf, offset, endian) {
