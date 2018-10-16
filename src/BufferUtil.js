@@ -294,6 +294,23 @@ function readBigIntLE (buf, offset, size=8) {
 	return BigIntBuffer.toBigIntLE(buf.slice(offset, offset + size));
 }
 
+function _readArbBit (buf, offset, bitCount, endian) {
+	if (bitCount % 8 !== 0 && bitCount !== 0) {
+		// It would be nice to read any integer with any byte count but it's not really needed right now
+		throw new Error("Sorry, but currently only bitCounts divisible by 8 (basically into a byte count) are not able to be read.");
+	}
+
+	return readBigInt(buf, offset, bitCount / 8, endian);
+}
+
+function readArbBitInt (buf, offset, bitCount, endian) {
+	return BigInt.asIntN(_readArbBit(buf, offset, bitCount, endian));
+}
+
+function readArbBitUInt (buf, offset, bitCount, endian) {
+	return BigInt.asUintN(_readArbBit(buf, offset, bitCount, endian));
+}
+
 function readInt64 (buf, offset, endian) {
 	return BigInt.asIntN(64, readBigInt(buf, offset, 8, endian));
 }
@@ -324,8 +341,10 @@ module.exports = {
 	readInt32,
 	readUInt32,
 
-	// 64bit
+	
 	readBigInt,
+	readArbBitInt,
+	readArbBitUInt,
 	readInt64,
 	readUInt64,
 	
