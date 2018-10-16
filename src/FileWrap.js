@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const Err = require('./Error.js');
 const BufferWrap = require('./BufferWrap.js');
 const EditStorage = require('./EditStorage.js')(); // load the default EditStorage
@@ -51,6 +52,11 @@ class FileWrap extends EventEmitter {
 		
 		this.emit('init:done');
 		Log.timeEnd('FileWrap-init');
+	}
+
+	// Returns the name of the file, because the fileDir is likely to have other path info on it
+	getFilename () {
+		return path.basename(this._fileDir);
 	}
 
 	// Returns an [searchValueStartOffset, searchValueEndOffset][]
