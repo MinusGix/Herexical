@@ -319,6 +319,14 @@ function readUInt64 (buf, offset, endian) {
 	return readArbBitUInt(but, offset, 64, endian);
 }
 
+// Should work, untested
+function readInt128 (buf, offset, endian) {
+	return readArbBitInt(buf, offset, 128, endian);
+}
+
+function readUInt128 (buf, offset, edian) {
+	return readArbBitUInt(buf, offset, 128, endian);
+}
 
 module.exports = {
 	ENDIAN,
@@ -347,6 +355,8 @@ module.exports = {
 	readArbBitUInt,
 	readInt64,
 	readUInt64,
+	readInt128,
+	readUInt128,
 	
 	writeDouble,
 	writeFloat,
