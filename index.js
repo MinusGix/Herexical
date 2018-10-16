@@ -7,6 +7,7 @@ const BufferWrap = require('./src/BufferWrap.js');
 const EditStorage = require('./src/EditStorage.js');
 const View = require('./src/View.js');
 const BufferUtil = require('./src/BufferUtil.js');
+const UIView = require('./src/UIView');
 
 module.exports = {
 	Err,
@@ -14,6 +15,7 @@ module.exports = {
 	BufferWrap,
 	EditStorage,
 	View,
+	UIView,
 	Log,
 	BufferUtil,
 };
