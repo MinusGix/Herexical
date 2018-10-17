@@ -96,10 +96,26 @@ class TagManager {
 		this.tags.filter(tag => tag.name === name);
 	}
 
+	getTagOffsetStart (item) {
+		return typeof(item.offsetStart) === 'function' ? item.offsetStart(this, item) : item.offsetStart;
+	}
+
+	getTagOffsetEnd (item) {
+		return typeof(item.offsetEnd) === 'function' ? item.offsetEnd(this, item) : item.offsetEnd;
+	}
+
+	getTagOffsetStartByIndex (index) {
+		return this.getTagOffsetStart(this.tags[index]);
+	}
+
+	getTagOffsetEndByIndex (index) {
+		return this.getTagOffsetEnd(this.tags[index]);
+	}
+
 	getTagsInRange (rangeStart, rangeEnd) {
 		return this.tags.filter(tag => 
-			(rangeStart >= tag.offsetStart && rangeStart <= tag.offsetEnd) ||
-			(rangeEnd <= tag.offsetEnd && rangeEnd >= tag.offsetStart)
+			(rangeStart >= this.getTagOffsetStart(tag) && rangeStart <= this.getTagOffsetEnd(tag)) ||
+			(rangeEnd <= this.getTagOffsetEnd(tag) && rangeEnd >= this.getTagOffsetStart(tag))
 		);
 	}
 }
