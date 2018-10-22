@@ -8,7 +8,7 @@ const EditStorage = require('./src/EditStorage.js');
 const View = require('./src/View.js');
 const BufferUtil = require('./src/BufferUtil.js');
 const UIView = require('./src/UIView');
-const Struct = require('./src/UIStructure.js');
+const Struct = require('./src/UIStructure.`js');
 
 module.exports = {
 	Err,
