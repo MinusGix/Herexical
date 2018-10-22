@@ -1,10 +1,36 @@
 const View = require('./View.js');
+const Struct = require('./UIStructure.js');
 
 class UIView extends View {
 	constructor (file) {
 		super(file);
 
 		this.tags = new TagManager(this);
+
+		// List of raw structures, not positioned anywhere
+		this._structures = []; // Structure[]
+		// List of Structures in the actual display
+		this.displayedStructures = [];
+	}
+
+	addBaseStructure (struct) {
+		this._structures.push(struct);
+	}
+
+	useStructure (index, offset) {
+		let struct = this._structures[index];
+
+		if (struct instanceof Struct.Structure) {
+			struct = struct.clone();
+
+			this.displayedStructures.push(struct);
+
+			struct.offset = offset;
+
+			struct.calculate(this.fileWrapper._loaded._buffer, 0);
+		} else {
+			throw new TypeError("index given was invalid");
+		}
 	}
 
 	async getLine (offset, byteCount, includeString=false) {

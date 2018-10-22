@@ -8,6 +8,7 @@ const EditStorage = require('./src/EditStorage.js');
 const View = require('./src/View.js');
 const BufferUtil = require('./src/BufferUtil.js');
 const UIView = require('./src/UIView');
+const Struct = require('./src/UIStructure.js');
 
 module.exports = {
 	Err,
@@ -18,6 +19,7 @@ module.exports = {
 	UIView,
 	Log,
 	BufferUtil,
+	Struct,
 };
 
 Log.info('Index.js finished.');

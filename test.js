@@ -20,7 +20,6 @@ async function writeData(view, force = false) {
 	let fileSize = await view.fileWrapper.getSize();
 	await view.loadView(force);
 
-
 	Herx.Log.info('File Size (Bytes):', fileSize, '\n\tis correct:', fileSize === 1024n);
 
 	let displayData = view.fileWrapper._loaded._buffer.toString('hex');
@@ -45,7 +44,9 @@ async function writeData(view, force = false) {
 	const testIdleSize = false;
 	const testSearch = false;
 	const testHexView = false;
-	const testTags = true;
+	const testTags = false;
+	const testStruct = false;
+	const testBitFlagStruct = false;
 
 	let view = new Herx.UIView(curFile);
 
@@ -170,6 +171,66 @@ async function writeData(view, force = false) {
 		console.log('25,45', view.tags.getTagsInRange(25, 45));
 		console.log('30,35', view.tags.getTagsInRange(30, 35));
 		console.log('35,50', view.tags.getTagsInRange(35, 50));
+	}
+
+	if (testStruct) {
+		await view.loadView();
+
+		let struct = new Herx.Struct.Structure();
+		struct.name = 'Person';
+
+		let ageItem = new Herx.Struct.IntStructureItem(0, 8);
+		ageItem.name = 'Age';
+		let nameSize = new Herx.Struct.IntStructureItem(1, 8);
+		nameSize.name = 'nameSize';
+		let name = new Herx.Struct.StringStructureItem(2, 'nameSize');
+		name.name = 'name';
+		let alive = new Herx.Struct.BoolStructureItem('2 + nameSize', true)
+		alive.name = 'alive';
+
+		view.addBaseStructure(struct);
+
+		struct.structureItems.push(ageItem);
+		struct.structureItems.push(nameSize);
+		struct.structureItems.push(name);
+		struct.structureItems.push(alive);
+
+		view.useStructure(0, 0);
+
+		console.log(view.displayedStructures[0].structureItems.map(item => [item.name, item.value]));
+	}
+
+	if (testBitFlagStruct) {
+		await view.loadView();
+
+		let struct = new Herx.Struct.Structure();
+		struct.name = 'bitflag';
+
+		let bitFlag = new Herx.Struct.BitFlagStructureItem(0, {
+			first: 0,
+			second: 1,
+			third: 2,
+			fourth: 3,
+			fifth: [4, 5, 6],
+			sixth: 5,
+			seventh: 6,
+			eighth: 7,
+			ninth: 8,
+			tenth: 9,
+			eleventh: 10,
+			twelfth: 11,
+			thirteenth: 12,
+			fourteenth: 13,
+			fifteenth: [14, 15],
+		}, 2);
+		bitFlag.name = 'BitFlag';
+
+		struct.structureItems.push(bitFlag);
+
+		view.addBaseStructure(struct);
+		view.useStructure(1, 0);
+
+		console.log(view.displayedStructures[1].structureItems.map(item => [item.name, item.value]));
 	}
 
 	//let iter = view.file._loaded.values();

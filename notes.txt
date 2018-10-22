@@ -10,3 +10,36 @@ Nodejs complains when I try making a too long buffer into a string. (1GB file fi
 
 Just realized that BigInt isn't just a 64bit number, it's arbitrary bit number!
 BigInt.asUintN(width, BigInt) -> BigInt.asUintN(128, -1) is for wrapped them between the values. nice. It seems to go really high, testing BigInt.asUintN(65536, -1), was slow but it worked. (Well I assume the insanely huge value it gave me was correct)
+
+Structlang notes:
+each token has a type property
+
+byte: (basic type)
+	props:
+		size: The amount of bytes it is. (default: 1)
+		name: The name of the 'variable' it is. (default: null)
+			names are unique
+			null names are not unique, and are not considered. 'null' != null
+		offset: the offset into the file. if given no offset (null offset) then it will try to put it after the last read offset (0 if none before it)
+	value: array of bytes, length is #size
+		- You can access the inherited types from extended types, so int could get the raw bytes if needed
+
+int: extends byte
+	props:
+		size: bitCount / 8
+		bitCount: 8 | 16 | 32 | 64 | 128 | ....
+	value: The array of bytes converted
+
+string: extend byte
+	props:
+		encoding?: The encoding of the string.. im not implementing this at the start
+	value: string from the bytes read
+
+bool: extend byte
+	00 = false
+	01 = true
+	Doesn't actually read a single bit, but probably should
+	props:
+		size: 1
+	value: false(00) | true(01 or anything else)
+
