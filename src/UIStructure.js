@@ -51,10 +51,19 @@ class Structure {
 		this.name = null;
 
 		this.structureItems = []; // StructureItem[]
+
+		this.isItem = false;
+		this.parentItem = null;
+		// Set each time calculate is ran
+		this.parentStruct = null;
 	}
 
 	findItemsBeforeItem (item) {
 		let ret = [];
+
+		if (this.isItem) {
+			ret.push(...this.parentStruct.findItemsBeforeItem(this.parentItem));
+		}
 
 		for (let i = 0; i < this.structureItems.length; i++) {
 			if (this.structureItems[i] === item) {
@@ -71,6 +80,10 @@ class Structure {
 	clear () {
 		for (let i = 0; i < this.structureItems.length; i++) {
 			this.structureItems[i].flush();
+		}
+
+		if (this.isItem) {
+			this.parentStruct = null;
 		}
 	}
 
@@ -90,6 +103,8 @@ class Structure {
 		struct.name = this.name;
 		struct.structureItems = this.structureItems
 			.map(item => item.clone());
+		struct.isItem = this.isItem;
+		struct.parentItem = this.parentItem;
 
 		return struct;
 	}
@@ -100,6 +115,7 @@ class Structure {
 		ret.name = this.name;
 		ret.structureItems = this.structureItems
 			.map(item => item.toJSON());
+		ret.isItem = this.isItem;
 
 		return removeNullProperties(ret);;
 	}
@@ -108,7 +124,44 @@ class Structure {
 		let item = new this();
 
 		for (let key in data) {
-			item[key] = data[key];
+			if (key === 'structureItems') {
+				for (let i = 0; i < data[key].length; i++) {
+					let itemData = data[key][i];
+					let type = itemData.type;
+
+					let val = null;
+
+					switch (type) {
+						case 'item':
+							val = StructureItem.fromJSON(item);
+							break;
+						case 'byte':
+							val = ByteStructureItem.fromJSON(item);
+							break;
+						case 'bitflag':
+							val = BitFlagStructureItem.fromJSON(item);
+							break;
+						case 'int':
+							val = IntStructureItem.fromJSON(item);
+							break;
+						case 'bool':
+							val = BoolStructureItem.fromJSON(item);
+							break;
+						case 'string':
+							val = StringStructureItem.fromJSON(item);
+							break;
+						case 'structure':
+							val = StructureStructureItem.fromJSON(item);
+							break;
+						default:
+							throw new Error("Unknown StructureItem type: " + type);
+					}
+
+					item[key].push(val);
+				}
+			} else {
+				item[key] = data[key];
+			}
 		}
 
 		return item;
@@ -216,13 +269,14 @@ class ByteStructureItem extends StructureItem {
 		if (typeof(value) === 'string') {
 			// We can't just share the math scope between multiple calls of __calculateProp,
 			// because an equation can modify the values of the scope (though, admittedly a shared scope between them could be useful?)
-			ret = mathjs.eval(this.size, this.__calculateMathScope(struct));
+			ret = mathjs.eval(value, this.__calculateMathScope(struct));
 		} else if (typeof(value) === 'number') {
 			ret = value;
 		}
 
 		if (typeof(ret) !== 'number') {
 			Log.warn("Prop value (or equation result) was not a number. Offending value:", value);
+			ret = 0;
 		}
 
 		return ret;
@@ -421,6 +475,118 @@ class StringStructureItem extends ByteStructureItem {
 	}
 }
 
+/*
+class StructureStructureItem extends StructureItem {
+	constructor (structure, amount=1) {
+		super();
+
+		this.type = 'structure';
+
+		this._setupStructure(structure);
+		this.amount = amount;
+
+		this._data = [];
+	}
+
+	_setupStructure (structure=null) {
+		if (structure instanceof Structure) {
+			structure = structure.clone();
+
+			structure.isItem = true;
+			structure.parentItem = this;
+
+			this.structure = structure;
+		} else if (structure === null) { // if it's null, then just set it to null
+			this.structure = null;
+		} else {
+			throw new TypeError("structure given to _setupStructure for StructureStructureIteM was not an instanceof Structure");
+		}
+	}
+
+	clear () {
+		super.clear();
+
+		this._data = [];
+	}
+
+	// Copied from ByteStructureItem, would be nice to not repeat it
+	__calculateMathScope (struct) {
+		// Get all the variable values before this to pass to the equation
+		// It would be nice if we could only pass what we
+		return struct.findItemsBeforeItem(this)
+			.filter(item => item.name !== null) // remove all unnamed variables
+			.reduce ((obj, item) => { // turn it into an object for the scope
+				obj[item.name] = item.value;
+
+				// Convert bigints to numbers, because mathjs doesn't seem to support them
+				if (typeof(obj[item.name]) === 'bigint') {
+					obj[item.name] = Number(obj[item.name]);
+				}
+
+				return obj;
+			}, {});
+	}
+
+	__calculateProp (value, struct) {
+		let ret = null;
+
+		// It's an equation
+		if (typeof(value) === 'string') {
+			// We can't just share the math scope between multiple calls of __calculateProp,
+			// because an equation can modify the values of the scope (though, admittedly a shared scope between them could be useful?)
+			ret = mathjs.eval(value, this.__calculateMathScope(struct));
+		} else if (typeof(value) === 'number') {
+			ret = value;
+		}
+
+		if (typeof(ret) !== 'number') {
+			Log.warn("Prop value (or equation result) was not a number. Offending value:", value);
+			ret = 0;
+		}
+
+		return ret;
+	}
+
+	get value () {
+		return this._data;
+	}
+
+	calculate (struct, buf, offsetIntoBuffer) {
+		this.clear();
+
+		let amount = this.__calculateProp(this.amount, struct);
+		let offset = offsetIntoBuffer;
+
+		for (let i = 0; i < amount; i++) {
+			let clonedStructure = this.structure.clone();
+			clonedStructure.parentStruct = struct;
+			
+			let lastOffset = clonedStructure.calculate(buf, offset);
+			offset += lastOffset;
+
+			this._data.push(clonedStructure);
+		}
+
+		return
+	}
+
+	toJSON () {
+		let ret = super.toJSON(['structure']);
+
+		ret.structure = this.structure.toJSON();
+
+		return ret;
+	}
+
+	static fromJSON (data) {
+		let item = super.fromJSON(data);
+
+		item._setupStructure(Structure.fromJSON(data.structure))
+
+		return item;
+	}
+}*/
+
 module.exports = {
 	Structure,
 	
@@ -430,4 +596,5 @@ module.exports = {
 	IntStructureItem,
 	BoolStructureItem,
 	StringStructureItem,
+	//StructureStructureItem,
 };

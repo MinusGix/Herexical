@@ -47,6 +47,7 @@ async function writeData(view, force = false) {
 	const testTags = false;
 	const testStruct = false;
 	const testBitFlagStruct = false;
+	const testStructStruct = false;
 
 	let view = new Herx.UIView(curFile);
 
@@ -231,6 +232,49 @@ async function writeData(view, force = false) {
 		view.useStructure(1, 0);
 
 		console.log(view.displayedStructures[1].structureItems.map(item => [item.name, item.value]));
+	}
+
+	if (testStructStruct) {
+		view.viewSize = 256;
+		await view.loadView();
+
+		let struct = new Herx.Struct.Structure();
+		struct.name = 'group';
+
+		let header = new Herx.Struct.StringStructureItem(0, 3);
+		header.name = 'header';
+		let version = new Herx.Struct.IntStructureItem(3, 8);
+		version.name = 'version';
+		let groupNameSize = new Herx.Struct.IntStructureItem(4, 8);
+		groupNameSize.name = 'GroupNameSize';
+		let groupName = new Herx.Struct.StringStructureItem(5, 'GroupNameSize');
+		groupName.name = 'GroupName';
+		let peopleStructCount = new Herx.Struct.IntStructureItem('6 + GroupNameSize', 16);
+		peopleStructCount.name = 'PeopleStructCount';
+
+		let peopleStruct = new Herx.Struct.Structure();
+		peopleStruct.name = 'people';
+
+		let peopleItem = new Herx.Struct.StructureStructureItem(peopleStruct, 'PeopleStructCount');
+		peopleItem.name = 'people'
+
+		view.addBaseStructure(struct);
+
+		struct.structureItems.push(
+			header,
+			version,
+			groupNameSize,
+			groupName,
+			peopleStructCount,
+			peopleItem
+		);
+
+		view.useStructure(0, 0);
+
+		console.log(view.displayedStructures[0].toJSON());
+		console.log(view.displayedStructures[0].structureItems.map(item => {
+			let ret = [item.name, item.value]
+		}));
 	}
 
 	//let iter = view.file._loaded.values();
