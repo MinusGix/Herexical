@@ -4,30 +4,19 @@
 		- Option to open them in their own window
 	- Sidebar with preview of value of current type at current selection
 	- Highlight sections with a color and text when you hover over them (stored as: [startOffset, endOffset, text] ?)
-	- Perhaps a pattern highlighting? 
-		- int32 (length) char[length] (text)
-		- int8 (type) 
-			- type == 1
-				- int32 (userid)
-			- type == 2
-				- int16 (length) char[length] (username)
-			- type === 3
-				- int8 (age)
-		- etc, basically a structure (is that the right term?) matching for complex storage types.
-		- The user could run a command to tell it to highlight a structure (have names given to them) and it will try highlighting at their current positions
-		- This could be implemented in the main Herexical code, and just have data which can tell the clients which are selected. Perhaps once/if I make it modular
 - Make the code more modular.
-- Add method to get byte in binary to BufferUtil and View data function
+- Add method to get byte in binary to BufferUtil (so that it can be supplied to the user)
 - Add funcs to get Float (32 and 64?) and Double in view data func
 	- readDouble(LE|BE) say they read 64 bit double, but that must lose some precision
 	- readFloat(LE|BE) says it reads a 32-bit Float
 		- Thus a 64 bit measure should be made. Will have to use some big number library as BigInts are well Integers
-- Make a function to get a lot of constant data (such as file size and filename)
-- Add BufferUtil func to get a byte as a string in different encodings
+- Make a function to get a lot of constant unchanging data (such as file size and filename), useful for stats
+- Add BufferUtil func to get a byte as a string in different encodings, this would make so it isn't only ascii
 - Have module functions that are only included if need be? It's not like they'll have much of an impact on the filesize/memusage if they're unused, so maybe not?
 - Add a setting to View if it can unload (aka set the current loaded buffer to null and hope the GC gets it) while it's not being viewed
 	- requires adding a variable that tells the View if it's being viewed that the UI Designer uses
-- Perhaps a UIView class that extends View and comes with fancy functions that are useful for UI's but not as useful elsewhere? That sounds like a good idea
+	- Good for things like tabs, probably shouldn't be used if they've just minimized the window
+UIView Ideas:
 	-? Add a func to loop over buffer data like they're rows. (Like, how a UI might have space for 28 bytes, so it gives all 28 at once and maybe offset?) This would make it easier for ui's
 - Add Find and Replace function
 - Add regex option to Search (and Find and Replace if it's implemented)
@@ -37,4 +26,4 @@
 	- Then implement that on the search generators to make a bit less repeated code
 - Possibly load requires (for like path in filewrap which is only needed if you use the filename command) lazily, only loading them when needed.
 - Add save as function, which updates the current file to the saved one. (Remember to clear idlesize and idlefilename)
-- Make idle functions clearable. (Currently, you'd have to redefine them
+- Make idle functions clearable. (Currently, you'd have to redefine them)
