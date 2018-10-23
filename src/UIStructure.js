@@ -13,26 +13,49 @@ function isFlag (field, flag) {
 	return (field & flag) !== 0; // if It has the flag specified with a non zero value
 }
 
-function constructFlag (offset) {
-	switch (offset) {
-		case 0:
-			return 0b10000000;
-		case 1:
-			return 0b01000000;
-		case 2:
-			return 0b00100000;
-		case 3:
-			return 0b00010000;
-		case 4:
-			return 0b00001000;
-		case 5:
-			return 0b00000100;
-		case 6:
-			return 0b00000010;
-		case 7:
-			return 0b00000001;
-		default:
-			throw new Error("Unknown offset: " + offset);
+function constructFlag (offset, numbering='MSB') {
+	if (numbering === 'MSB') {
+		switch (offset) {
+			case 0:
+				return 0b10000000;
+			case 1:
+				return 0b01000000;
+			case 2:
+				return 0b00100000;
+			case 3:
+				return 0b00010000;
+			case 4:
+				return 0b00001000;
+			case 5:
+				return 0b00000100;
+			case 6:
+				return 0b00000010;
+			case 7:
+				return 0b00000001;
+			default:
+				throw new Error("Unknown offset: " + offset);
+		}
+	} else if (numbering === 'LSB') {
+		switch (offset) {
+			case 0:
+				return 0b00000001;
+			case 1:
+				return 0b00000010;
+			case 2:
+				return 0b00000100;
+			case 3:
+				return 0b00001000;
+			case 4:
+				return 0b00010000;
+			case 5:
+				return 0b00100000;
+			case 6:
+				return 0b01000000;
+			case 7:
+				return 0b10000000;
+			default:
+				throw new Error("Unknown offset: " + offset);
+		}
 	}
 }
 
@@ -313,6 +336,13 @@ class BitFlagStructureItem extends ByteStructureItem {
 
 		this.type = 'bitflag';
 
+		// Valid values:
+		// LSB: 76543210 - index
+		//      10010110
+		// MSB: 01234567 - index
+		//		10010110
+		this.numbering = 'MSB';
+
 		this.flags = flags || {};
 		this._calculatedFlags = {};
 	}
@@ -341,7 +371,7 @@ class BitFlagStructureItem extends ByteStructureItem {
 
 		return isFlag(
 			this._data[itemIndex],
-			constructFlag(offset % 8)
+			constructFlag(offset % 8, this.numbering)
 		);
 	}
 
