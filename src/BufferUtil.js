@@ -278,6 +278,55 @@ function writeUInt32LE (buf, offset, value) {
 
 // BigInt functions, separate just to keep it simpler
 
+function writeBigInt (buf, offset, value, size, endian) {
+	return manageEndian(writeBigIntBE, writeBigIntLE, endian)(buf, offset, size, value);
+}
+
+function writeBigIntBE (buf, offset, size=8, value) {
+	buf = getBuffer(buf);
+
+	return buf.copy(BigIntBuffer.toBufferBE(value, size), offset);
+}
+
+function writeBigIntLE (buf, offset, size=8, value) {
+	buf = getBuffer(buf);
+
+	return buf.copy(BigIntBuffer.toBufferLE(value, size), offset);
+}
+
+function _writeArbBit (buf, offset, bitCount, value, endian) {
+	if (bitCount % 8 !== 0 && bitCount !== 0) {
+		// It would be nice to write any integer with any bit count but its not really needed right now
+		throw new Error("Sorry, but currently only bitCounts divisible by 8 are not able to be written.");
+	}
+
+	return writeBigInt(buf, offset, value, bitCount / 8, endian);
+}
+
+function writeArbBitInt (buf, offset, bitCount, value, endian) {
+	return _writeArbBit(buf, offset, bitCount, BigInt.asIntN(bitCount, value), endian);
+}
+
+function writeArbBitUInt (buf, offset, bitCount, value, endian) {
+	return _writeArbBit(buf, offset, bitCount, BigInt.asUintN(bitCount, value), endian);
+}
+
+function writeInt64 (buf, offset, value, endian) {
+	return writeArbBitInt(buf, offset, 64, value, endian);
+}
+
+function writeUInt64 (buf, offset, value, endian) {
+	return writeArbBitUInt(buf, offset, 64, value, endian);
+}
+
+function writeInt128 (buf, offset, value, endian) {
+	return writeArbBitInt(buf, offset, 128, value, endian);
+}
+
+function writeUInt128 (buf, offset, value, endian) {
+	return writeArbBitUInt(buf, offset, 128, value, endian);
+}
+
 function readBigInt (buf, offset, size=8, endian) {
 	return manageEndian(readBigIntBE, readBigIntLE, endian)(buf, offset, size);
 }
@@ -296,7 +345,7 @@ function readBigIntLE (buf, offset, size=8) {
 
 function _readArbBit (buf, offset, bitCount, endian) {
 	if (bitCount % 8 !== 0 && bitCount !== 0) {
-		// It would be nice to read any integer with any byte count but it's not really needed right now
+		// It would be nice to read any integer with any bit count but it's not really needed right now
 		throw new Error("Sorry, but currently only bitCounts divisible by 8 (basically into a byte count) are not able to be read.");
 	}
 
@@ -367,4 +416,12 @@ module.exports = {
 	writeInt32,
 	writeUInt32,
 	writeString,
+
+	writeBigInt,
+	writeArbBitInt,
+	writeArbBitUInt,
+	writeInt64,
+	writeUInt64,
+	writeInt128,
+	writeUInt128,
 };
