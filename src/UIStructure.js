@@ -618,6 +618,9 @@ class StructureStructureItem extends StructureItem {
 }*/
 
 module.exports = {
+	isFlag,
+	constructFlag,
+	removeNullProperties,
 	Structure,
 	
 	StructureItem,
