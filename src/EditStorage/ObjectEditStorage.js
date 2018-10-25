@@ -6,8 +6,8 @@ const EditStorage = require('./EditStorage.js');
 Log.timeStart('Loading-ObjectEditStorage');
 
 class ObjectEditStorage extends EditStorage {
-	constructor (fileWrapper) {
-		super(fileWrapper);
+	constructor (view) {
+		super(view);
 
 		this.data = {};
 	}

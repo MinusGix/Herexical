@@ -24,6 +24,6 @@ UIView Ideas:
 - Add a function to fully delete part of file. Would need a special EditStorage code or something
 - Add a utility function to get all values out of an iter and asynciter
 	- Then implement that on the search generators to make a bit less repeated code
-- Possibly load requires (for like path in filewrap which is only needed if you use the filename command) lazily, only loading them when needed.
+- Possibly load requires (for like path in view which is only needed if you use the filename command) lazily, only loading them when needed.
 - Add save as function, which updates the current file to the saved one. (Remember to clear idlesize and idlefilename)
 - Make idle functions clearable. (Currently, you'd have to redefine them)

@@ -7,8 +7,8 @@ Log.timeStart('Loading-ArrayOffsetEditStorage');
 
 // Idea #1 [offset, value][]
 class ArrayOffsetEditStorage extends EditStorage {
-	constructor (fileWrapper) {
-		super(fileWrapper);
+	constructor (view) {
+		super(view);
 
 		this.data = []; 
 	}
@@ -19,9 +19,9 @@ class ArrayOffsetEditStorage extends EditStorage {
 
 	// 10-20ms on 500bytes
 	async _save () {
-		this.fileWrapper.saving = true;
+		this.view.saving = true;
 
-		const fd = this.fileWrapper.fd;
+		const fd = this.view.fd;
 		const buffer = Buffer.alloc(1);
 
 		while (await this.hasEdits()) {

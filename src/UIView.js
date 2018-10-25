@@ -27,7 +27,7 @@ class UIView extends View {
 
 			struct.offset = offset;
 
-			struct.calculate(this.fileWrapper._loaded._buffer, 0);
+			struct.calculate(this._loadedData._buffer, 0);
 		} else {
 			throw new TypeError("index given was invalid");
 		}
@@ -46,7 +46,7 @@ class UIView extends View {
 		};
 
 		for (let i = 0; i < byteCount; i++) {
-			let byte = this.fileWrapper._loaded._buffer[offset + i];
+			let byte = this._loadedData._buffer[offset + i];
 
 			// Doesn't exist
 			if (byte === undefined) {

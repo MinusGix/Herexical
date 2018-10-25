@@ -17,16 +17,16 @@ function splitString(str, chunkSize = 2) {
 }
 
 async function writeData(view, force = false) {
-	let fileSize = await view.fileWrapper.getSize();
+	let fileSize = await view.getSize();
 	await view.loadView(force);
 
 	Herx.Log.info('File Size (Bytes):', fileSize, '\n\tis correct:', fileSize === 1024n);
 
-	let displayData = view.fileWrapper._loaded._buffer.toString('hex');
+	let displayData = view._loadedData._buffer.toString('hex');
 	Herx.Log.info('Read Data:    ', displayData);
 	Herx.Log.info('Nicer Data:   ', splitString(displayData, 2).join(' ')); // make this display as split every two chars ff ff ff 00 etc
 	Herx.Log.info('Nibble Count: ', displayData.length);
-	Herx.Log.info('Buffer Length:', view.fileWrapper._loaded._buffer.length);
+	Herx.Log.info('Buffer Length:', view._loadedData._buffer.length);
 }
 
 (async () => {
@@ -53,19 +53,19 @@ async function writeData(view, force = false) {
 
 	await view.init();
 
-	//await writeData(view);
+	await writeData(view);
 
 	if (isEditing) {
 		if (curFile === Files.small) {
 			Herx.Log.info('Writing small file data');
 			for (let i = 0; i < 0xFF; i++) {
-				await view.fileWrapper.edit(i, i);
+				await view.edit(i, i);
 			}
 		} else if (curFile === Files.large) {
 			Herx.Log.info('Writing large file data');
 
 			for (let i = 0; i < 0xFF; i++) {
-				await view.fileWrapper.edit(i, i);
+				await view.edit(i, i);
 			}
 		}
 	}
@@ -89,18 +89,18 @@ async function writeData(view, force = false) {
 	//console.log(await view.getDataOnOffset(0));
 
 	if (isEditing) {
-		await view.fileWrapper.save();
+		await view.save();
 	}
 
 	if (testIdleSize) {
-		Herx.Log.debug(await view.fileWrapper.getSize());
-		Herx.Log.debug(await view.fileWrapper.getSize());
+		Herx.Log.debug(await view.getSize());
+		Herx.Log.debug(await view.getSize());
 	}
 
 	if (testSearch) {
 		try {
-			console.log(await view.fileWrapper.searchHexArray([0xAA, 0xBB]));
-			console.log(await view.fileWrapper.searchString("test", false))
+			console.log(await view.searchHexArray([0xAA, 0xBB]));
+			console.log(await view.searchString("test", false))
 		} catch (err) {
 			console.log(err);
 		}

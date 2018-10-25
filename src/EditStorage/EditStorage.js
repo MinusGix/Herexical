@@ -10,10 +10,10 @@ Log.timeStart('Loading-EditStorage');
 // Most if not all of the methods should return a promise (or be async) so that implementations that do stuff like write to file or use a db
 //	can do that without need of modifying code
 class EditStorage extends EventEmitter {
-	constructor (fileWrapper) {
+	constructor (view) {
 		super();
 
-		this.fileWrapper = fileWrapper;
+		this.view = view;
 
 		this.settings = {};
 
@@ -23,7 +23,7 @@ class EditStorage extends EventEmitter {
 	}
 
 	async save (optimize=true) {
-		if (this.fileWrapper.saving) {
+		if (this.view.saving) {
 			throw new Error("Can't save while already saving.");
 		}
 
@@ -42,14 +42,14 @@ class EditStorage extends EventEmitter {
 	// Actual save function
 	// 500 - 800ms on write in first 1mb of _TestLarge.bin
 	async _save () {
-		this.fileWrapper.saving = true;
+		this.view.saving = true;
 
-		let sizeLeft = Number(await this.fileWrapper.getSize());
+		let sizeLeft = Number(await this.view.getSize());
 		let currentPieceSize = 0;
 		let pos = 0;
 		// Preload these so we aren't doing the access several times
-		const fd = this.fileWrapper.fd;
-		const maxBufferSize = Number(this.fileWrapper.constructor.MAX_BUFFER_SIZE);
+		const fd = this.view.fd;
+		const maxBufferSize = Number(this.view.constructor.MAX_BUFFER_SIZE);
 
 		while (sizeLeft > 0 && (await this.hasEdits())) {
 			if (sizeLeft > maxBufferSize) {
@@ -58,7 +58,7 @@ class EditStorage extends EventEmitter {
 				currentPieceSize = sizeLeft;
 			}
 
-			let buf = await this.fileWrapper._loadData(pos, currentPieceSize, true);
+			let buf = await this.view._loadData(pos, currentPieceSize, true);
 			pos += currentPieceSize;
 			
 			Log.timeStart('_save fs.write');
