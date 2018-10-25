@@ -1,14 +1,13 @@
 const Err = require('./Error.js');
 const Log = require('./Log.js');
 const BufUtil = require('./BufferUtil.js');
-const ENDIAN = BufUtil.ENDIAN;
 
 Log.timeStart('Loading-BufferWrap');
 
 class BufferWrap {
 	constructor () {
 		this._buffer = null;
-		this.defaultEndian = ENDIAN.BIG;
+		this.defaultEndian = BufUtil.ENDIAN.BIG;
 	}
 
 	resetBuffer () {
@@ -31,7 +30,7 @@ class BufferWrap {
 
 	setEndian (endian) {
 		if (typeof(endian) === 'number') {
-			if (endian === ENDIAN.BIG || endian === ENDIAN.LITTLE) {
+			if (endian === BufUtil.ENDIAN.BIG || endian === BufUtil.ENDIAN.LITTLE) {
 				this.defaultEndian = endian;
 			} else {
 				throw new TypeError(endian + " is an invalid endian.");
@@ -40,9 +39,9 @@ class BufferWrap {
 			endian = endian.toLowerCase();
 
 			if (endian === 'little' || endian === 'littleendian' || endian === 'little-endian' || endian === 'little endian') {
-				return this.setEndian(ENDIAN.LITTLE);
+				return this.setEndian(BufUtil.ENDIAN.LITTLE);
 			} else if (endian === 'big' || endian === 'bigendian' || endian === 'big-endian' || endian === 'big endian') {
-				return this.setEndian(ENDIAN.BIG);
+				return this.setEndian(BufUtil.ENDIAN.BIG);
 			} else {
 				throw new TypeError(endian + " is an invalid endian.");
 			}
@@ -51,9 +50,9 @@ class BufferWrap {
 
 	// If I ever make more than one endian setting this won't work
 	flipEndian () {
-		if (this.defaultEndian === ENDIAN.BIG) {
+		if (this.defaultEndian === BufUtil.ENDIAN.BIG) {
 			return this.setEndian(1);
-		} else if (this.defaultEndian === ENDIAN.LITTLE) {
+		} else if (this.defaultEndian === BufUtil.ENDIAN.LITTLE) {
 			return this.setEndian(0);
 		}
 
@@ -66,9 +65,9 @@ class BufferWrap {
 			type = this.defaultEndian;
 		}
 
-		if (type === ENDIAN.BIG) {
+		if (type === BufUtil.ENDIAN.BIG) {
 			return bigEndianFunction(...args);
-		} else if (type === ENDIAN.LITTLE) {
+		} else if (type === BufUtil.ENDIAN.LITTLE) {
 			return littleEndianFunction(...args);
 		}
 
@@ -76,11 +75,11 @@ class BufferWrap {
 	}
 
 	readDoubleBE (offset) {
-		return this.readDouble(offset, ENDIAN.BIG);
+		return this.readDouble(offset, BufUtil.ENDIAN.BIG);
 	}
 
 	readDoubleLE (offset) {
-		return this.readDouble(offset, ENDIAN.LITTLE);
+		return this.readDouble(offset, BufUtil.ENDIAN.LITTLE);
 	}
 
 	readDouble (offset, endian) {
@@ -88,11 +87,11 @@ class BufferWrap {
 	}
 
 	readFloatBE (offset) {
-		return this.readFloat(offset, ENDIAN.BIG);
+		return this.readFloat(offset, BufUtil.ENDIAN.BIG);
 	}
 
 	readFloatLE (offset) {
-		return this.readFloat(offset, ENDIAN.LITTLE);
+		return this.readFloat(offset, BufUtil.ENDIAN.LITTLE);
 	}
 
 	readFloat (offset, endian) {
@@ -104,11 +103,11 @@ class BufferWrap {
 	}
 
 	readInt16BE (offset) {
-		return this.readInt16(offset, ENDIAN.BIG);
+		return this.readInt16(offset, BufUtil.ENDIAN.BIG);
 	}
 
 	readInt16LE (offset) {
-		return this.readInt16(offset, ENDIAN.LITTLE);
+		return this.readInt16(offset, BufUtil.ENDIAN.LITTLE);
 	}
 
 	readInt16 (offset, endian) {
@@ -116,11 +115,11 @@ class BufferWrap {
 	}
 
 	readInt32BE (offset) {
-		return this.readInt32(offset, ENDIAN.BIG);
+		return this.readInt32(offset, BufUtil.ENDIAN.BIG);
 	}
 
 	readInt32LE (offset) {
-		return this.readInt32(offset, ENDIAN.LITTLE);
+		return this.readInt32(offset, BufUtil.ENDIAN.LITTLE);
 	}
 
 	readInt32 (offset, endian) {
@@ -132,11 +131,11 @@ class BufferWrap {
 	}
 
 	readUInt16BE (offset) {
-		return this.readUInt16(offset, ENDIAN.BIG);
+		return this.readUInt16(offset, BufUtil.ENDIAN.BIG);
 	}
 
 	readUInt16LE (offset) {
-		return this.readUInt16(offset, ENDIAN.LITTLE);
+		return this.readUInt16(offset, BufUtil.ENDIAN.LITTLE);
 	}
 
 	readUInt16 (offset, endian) {
@@ -144,11 +143,11 @@ class BufferWrap {
 	}
 
 	readUInt32BE (offset) {
-		return this.readUInt32(offset, ENDIAN.BIG);
+		return this.readUInt32(offset, BufUtil.ENDIAN.BIG);
 	}
 
 	readUInt32LE (offset) {
-		return this.readUInt32(offset, ENDIAN.LITTLE);
+		return this.readUInt32(offset, BufUtil.ENDIAN.LITTLE);
 	}
 
 	readUInt32 (offset, endian) {
@@ -168,11 +167,11 @@ class BufferWrap {
 	}
 
 	writeDoubleBE (offset, value) {
-		return this.writeDouble(offset, value, ENDIAN.BIG);
+		return this.writeDouble(offset, value, BufUtil.ENDIAN.BIG);
 	}
 
 	writeDoubleLE (offset, value) {
-		return this.writeDouble(offset, value, ENDIAN.BIG);
+		return this.writeDouble(offset, value, BufUtil.ENDIAN.BIG);
 	}
 
 	writeDouble (offset, value, endian) {
@@ -180,11 +179,11 @@ class BufferWrap {
 	}
 
 	writeFloatBE (offset, value) {
-		return this.writeFloat(offset, value, ENDIAN.BIG);
+		return this.writeFloat(offset, value, BufUtil.ENDIAN.BIG);
 	}
 
 	writeFloatLE (offset, value) {
-		return this.writeFloat(offset, value, ENDIAN.LITTLE);
+		return this.writeFloat(offset, value, BufUtil.ENDIAN.LITTLE);
 	}
 
 	writeFloat (offset, value, endian) {
@@ -196,11 +195,11 @@ class BufferWrap {
 	}
 
 	writeInt16BE (offset, value) {
-		return this.writeInt16(offset, value, ENDIAN.BIG);
+		return this.writeInt16(offset, value, BufUtil.ENDIAN.BIG);
 	}
 
 	writeInt16LE (offset, value) {
-		return this.writeInt16(offset, value, ENDIAN.LITTLE);
+		return this.writeInt16(offset, value, BufUtil.ENDIAN.LITTLE);
 	}
 
 	writeInt16 (offset, value, endian) {
@@ -208,11 +207,11 @@ class BufferWrap {
 	}
 
 	writeInt32BE (offset, value) {
-		return this.writeInt32(offset, value, ENDIAN.BIG);
+		return this.writeInt32(offset, value, BufUtil.ENDIAN.BIG);
 	}
 
 	writeInt32LE(offset, value) {
-		return this.writeInt32(offset, value, ENDIAN.LITTLE);
+		return this.writeInt32(offset, value, BufUtil.ENDIAN.LITTLE);
 	}
 
 	writeInt32 (offset, value, endian) {
@@ -224,11 +223,11 @@ class BufferWrap {
 	}
 
 	writeUInt16BE (offset, value) {
-		return this.writeUInt16(offset, value, ENDIAN.BIG);
+		return this.writeUInt16(offset, value, BufUtil.ENDIAN.BIG);
 	}
 
 	writeUInt16LE (offset, value) {
-		return this.writeUInt16(offset, value, ENDIAN.LITTLE);
+		return this.writeUInt16(offset, value, BufUtil.ENDIAN.LITTLE);
 	}
 
 	writeUInt16 (offset, value, endian) {
@@ -236,11 +235,11 @@ class BufferWrap {
 	}
 
 	writeUInt32BE (offset, value) {
-		return this.writeUInt32(offset, value, ENDIAN.LITTLE);
+		return this.writeUInt32(offset, value, BufUtil.ENDIAN.LITTLE);
 	}
 
 	writeUInt32LE(offset, value) {
-		return this.writeUInt32(offset, value, ENDIAN.LITTLE);
+		return this.writeUInt32(offset, value, BufUtil.ENDIAN.LITTLE);
 	}
 
 	writeUInt32 (offset, value, endian) {
