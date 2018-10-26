@@ -102,7 +102,7 @@ class Structure {
 	// Clear all data that was calculated
 	clear () {
 		for (let i = 0; i < this.structureItems.length; i++) {
-			this.structureItems[i].flush();
+			this.structureItems[i].clear();
 		}
 
 		if (this.isItem) {
