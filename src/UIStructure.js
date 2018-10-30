@@ -128,7 +128,7 @@ class Structure {
 			.map(item => item.clone());
 		struct.isItem = this.isItem;
 		struct.parentItem = this.parentItem;
-
+		console.log(struct.isItem, this.isItem);
 		return struct;
 	}
 

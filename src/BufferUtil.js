@@ -93,7 +93,7 @@ function readInt16BE (buf, offset) {
 function readInt16LE (buf, offset) {
 	buf = getBuffer(buf);
 
-	return buf.readInt16LE(buf, offset);
+	return buf.readInt16LE(offset);
 }
 
 function readUInt16 (buf, offset, endian) {
@@ -109,7 +109,7 @@ function readUInt16BE (buf, offset) {
 function readUInt16LE (buf, offset) {
 	buf = getBuffer(buf);
 
-	return buf.readUInt16LE(buf, offset);
+	return buf.readUInt16LE(offset);
 }
 
 function readInt32 (buf, offset, endian) {
@@ -125,7 +125,7 @@ function readInt32BE (buf, offset) {
 function readInt32LE (buf, offset) {
 	buf = getBuffer(buf);
 
-	return buf.readInt32LE(buf, offset);
+	return buf.readInt32LE(offset);
 }
 
 function readUInt32 (buf, offset, endian) {
@@ -141,7 +141,7 @@ function readUInt32BE (buf, offset) {
 function readUInt32LE (buf, offset) {
 	buf = getBuffer(buf);
 
-	return buf.readUInt32LE(buf, offset);
+	return buf.readUInt32LE(offset);
 }
 
 // This is probably unnecesecary
@@ -164,7 +164,7 @@ function valuesArray (buf) {
 function writeString (buf, str, offset=0, encoding='utf8') {
 	buf = getBuffer(buf);
 
-	return this._buffer.write(str, offset, encoding);
+	return buf.write(str, offset, encoding);
 }
 
 function writeDouble (buf, offset, value, endian) {
