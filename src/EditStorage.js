@@ -55,6 +55,8 @@
 			
 */
 
+const Config = require('../config.js');
+
 const EventEmitter = require('events');
 const fs = require('fs');
 const Log = require('./Log.js');
@@ -87,8 +89,10 @@ module.exports = (name='default') => {
 	let filename;
 
 	if (name === 'default') {
-		filename = 	find(process.env.HERX_EDITSTORAGE_DEFAULT);
+		Log.info('1');
+		filename = find(Config.EDITSTORAGE_DEFAULT);
 	} else {
+		Log.info('2');
 		filename = find(name);
 	}
 

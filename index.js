@@ -1,4 +1,4 @@
-require('dotenv').config();
+const Config = require('./config.js');
 
 const Log = require('./src/Log.js');
 const Err = require('./src/Error.js');
@@ -20,6 +20,7 @@ module.exports = {
 	BufferUtil,
 	Struct,
 	Idle,
+	Config,
 };
 
 Log.info('Index.js finished.');

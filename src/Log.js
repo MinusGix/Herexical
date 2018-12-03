@@ -1,3 +1,5 @@
+const Config = require('../config.js');
+
 const fs = require('fs');
 const Err = require('./Error.js');
 const util = require('util');
@@ -10,8 +12,7 @@ let logFileName;
 let logFileFD;
 
 function constructLogFile () {
-	// Uses a process.env
-	logFileName = process.env.HERX_LOG_FILE.replace(/\{date\}/g, Date.now().toString());
+	logFileName = Config.LOG_FILE.replace(/\{date\}/g, Date.now().toString());
 
 	// Rather than use a promise here, or the callback on async version, we want to make sure this is created before we start logging
 	logFileFD = fs.openSync(logFileName, 'a');
@@ -34,8 +35,8 @@ function writeLogFile (...args) {
 }
 
 function Log (...args) {
-	if (process.env.HERX_SHOULD_LOG) {
-		const logTo = process.env.HERX_LOG_TO;
+	if (Config.SHOULD_LOG) {
+		const logTo = Config.LOG_TO;
 
 		if (logTo === 'console' || logTo === 'console&file') {
 			console.log(getIndent(), ...args);
@@ -62,31 +63,31 @@ function logMemoryUsage () {
 }
 
 function logDebug (...args) {
-	if (process.env.HERX_DEBUG_LOGGING) {
+	if (Config.DEBUG_LOGGING) {
 		Log('[DEBUG]', ...args);
 	}
 }
 
 function logInfo (...args) {
-	if (process.env.HERX_INFO_LOGGING) {
+	if (Config.INFO_LOGGING) {
 		Log('[INFO]', ...args);
 	}
 }
 
 function logError (...args) {
-	if (process.env.HERX_ERROR_LOGGING) {
+	if (Config.ERROR_LOGGING) {
 		Log('[ERROR]', ...args);
 	}
 }
 
 function logWarn (...args) {
-	if (process.env.HERX_WARN_LOGGING) {
+	if (Config.WARN_LOGGING) {
 		Log('[WARN]', ...args);
 	}
 }
 
 function logTrace (name, ...args) {
-	if (process.env.HERX_TRACE_LOGGING) {
+	if (Config.TRACE_LOGGING) {
 		Log('[TRACE]', (new Error(name)).stack, ...args);
 	}
 }
@@ -94,7 +95,7 @@ function logTrace (name, ...args) {
 let Times = {};
 
 function logTime (name, ...args) {
-	if (process.env.HERX_TIME_LOGGING) {
+	if (Config.TIME_LOGGING) {
 		if (Times.hasOwnProperty(name)) {
 			timeEnd(name);
 		} else {
@@ -104,7 +105,7 @@ function logTime (name, ...args) {
 }
 
 function timeStart (name) {
-	if (process.env.HERX_TIME_LOGGING) {
+	if (Config.TIME_LOGGING) {
 		Times[name] = Date.now();
 		Log('[TIMING]', name);
 		increaseIndent();
@@ -112,7 +113,7 @@ function timeStart (name) {
 }
 
 function timeEnd (name, ...args) {
-	if (process.env.HERX_TIME_LOGGING) {
+	if (Config.TIME_LOGGING) {
 		decreaseIndent();
 		Log('[/TIMING]', name, '-', Date.now() - Times[name], 'ms -', ...args);
 		delete Times[name];
@@ -133,11 +134,11 @@ function getIndent () {
 }
 
 // Essentially preload them. I imagine array access is faster than repeated .repeat calls when there's lots of logging
-// This is probably a premature optimization
+// This is probably (certainly) a premature optimization
 function populateIndentLevels () {
 	indentLevels = [];
 
-	for (let i = 0; i <= process.env.HERX_MAX_INDENT_LEVEL; i++) {
+	for (let i = 0; i <= Config.MAX_INDENT_LEVEL; i++) {
 		indentLevels.push(_getIndent(i));
 	}
 }
@@ -163,8 +164,8 @@ function checkIndent () {
 		indentLevel = 0;
 	}
 
-	if (indentLevel > process.env.HERX_MAX_INDENT_LEVEL) {
-		indentLevel = process.env.HERX_MAX_INDENT_LEVEL;
+	if (indentLevel > Config.MAX_INDENT_LEVEL) {
+		indentLevel = Config.MAX_INDENT_LEVEL;
 	}
 }
 
