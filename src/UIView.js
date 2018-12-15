@@ -33,6 +33,23 @@ class UIView extends View {
 		}
 	}
 
+	async getByte (offset) {
+		if (!this.loaded) {
+			// null -> there is no byte
+			// undefined -> we can't grab the byte because we're not loaded
+			return undefined;
+		}
+
+		let byte = this._loadedData._buffer[offset];
+
+		if (byte === undefined) {
+			// There is no byte
+			return null;
+		}
+
+		return byte;
+	}
+
 	async getLine (offset, byteCount, includeString=false) {
 		if (!this.loaded) {
 			// Perhaps should load it?
@@ -46,13 +63,12 @@ class UIView extends View {
 		};
 
 		for (let i = 0; i < byteCount; i++) {
-			let byte = this._loadedData._buffer[offset + i];
+			let byte = await this.getByte(offset + i);
 
-			// Doesn't exist
-			if (byte === undefined) {
-				break; // If it's undefined, then there should be nothing left, I don't believe buffers suddenly have completely empty space and then actual data ever
+			if (byte === undefined || byte === null) {
+				break;
 			}
-
+			
 			ret.bytes.push(byte);
 
 			if (includeString) {
