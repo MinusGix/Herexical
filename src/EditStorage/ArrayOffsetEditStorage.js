@@ -25,9 +25,11 @@ class ArrayOffsetEditStorage extends EditStorage {
 		const buffer = Buffer.alloc(1);
 
 		while (await this.hasEdits()) {
-			buffer[0] = await this.getOffset(this.data[0][0], true);
+			let data = this.data[0];
+			let offset = data[0];
+			buffer[0] = await this.getOffset(offset, true);
 			
-			await new Promise((resolve, reject) => fs.write(fd, buffer, err => {
+			await new Promise((resolve, reject) => fs.write(fd, buffer, 0, 1, offset, (err) => {
 				if (err) {
 					return reject(err);
 				}
