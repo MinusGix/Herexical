@@ -78,7 +78,7 @@ class ArrayOffsetEditStorage extends EditStorage {
 
 	// Unique to this, because not all implementations would have an index
 	async _getOffsetIndex (offset) {
-		for (let i = 0, len = this.data.length; i < len; i++) {
+		for (let i = this.data.length - 1; i >= 0; i--) {
 			if (this.data[i][0] === offset) {
 				return i;
 			}
