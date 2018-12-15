@@ -35,6 +35,8 @@ class ArrayOffsetEditStorage extends EditStorage {
 				resolve();
 			}));
 		}
+
+		this.view.saving = false;
 	}
 
 	async optimize () {

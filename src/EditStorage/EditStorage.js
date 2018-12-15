@@ -73,6 +73,8 @@ class EditStorage extends EventEmitter {
 
 			sizeLeft -= currentPieceSize;
 		}
+
+		this.view.saving = false;
 	}
 
 	async hasEdits () {
