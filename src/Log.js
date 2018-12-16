@@ -1,7 +1,6 @@
 const Config = require('../config.js');
 
 const fs = require('fs');
-const Err = require('./Error.js');
 const util = require('util');
 
 let indentLevel = 0;

@@ -815,8 +815,6 @@ describe('BufferWrap', () => {
 
 			expect(testBWrap.defaultEndian).to.be.equal(BufferUtil.ENDIAN.BIG);
 		});
-
-		// Somehow figure out that Err.FatalError was called
 	});
 
 	// This manageEndian is different from BufferUtil#manageEndian

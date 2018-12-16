@@ -1,4 +1,3 @@
-const Err = require('./Error.js');
 const Log = require('./Log.js');
 const BufUtil = require('./BufferUtil.js');
 
@@ -55,9 +54,8 @@ class BufferWrap {
 		} else if (this.defaultEndian === BufUtil.ENDIAN.LITTLE) {
 			return this.setEndian(0);
 		}
-
-		// TODO: with better error managing, make this less fatal but still dangerous. Perhaps a leveled 
-		Err.FatalError("BufferWrap#defaultEndian property was neither 0 (Big Endian) or 1 (Little Endian)!");
+		
+		throw new Error("BufferWrap#defaultEndian property was neither 0 (Big Endian) or 1 (Little Endian)!");
 	} 
 
 	manageEndian (bigEndianFunction, littleEndianFunction, type, ...args) {
