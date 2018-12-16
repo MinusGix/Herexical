@@ -1,5 +1,4 @@
 const BufferWrap = require('./BufferWrap.js');
-const Err = require('./Error.js');
 const EventEmitter = require('events');
 const Log = require('./Log.js');
 const BufUtil = require('./BufferUtil.js');
@@ -68,13 +67,13 @@ class View extends EventEmitter {
 		try {
 			this.fd = await this._open();
 		} catch (err) {
-			Err.FatalError(err, "Opening file to retrieve file-descriptor failed.");
+			throw new Error("Failed opening file.\n " + err.stack);
 		}
 
 		try {
 			this.editStorage.on('storeOffset', () => this.emit('edited'));
 		} catch (err) {
-			Err.FatalError(err, "Adding listener for storeOffset");
+			throw new Error("Failed adding listener to editStorage for storeOffset.\n" + err.stack);
 		}
 
 		this.on('edited', () => {
@@ -296,7 +295,7 @@ class View extends EventEmitter {
 
 	_loadData (pos, length, killEditStorage=false, fd=null) {
 		if (!this.initialized) {
-			return Err.FatalError("Attempt to load data without being initialized.");
+			throw new Error("Attempted to load data without View being initialized.");
 		}
 
 		if (fd === null) {
