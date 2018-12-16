@@ -282,7 +282,11 @@ class View extends EventEmitter {
 
 		return new Promise((resolve, reject) => fs.open(this._fileDir, 'r+', (err, fd) => {
 			if (err) {
-				throw err;
+				Log.timeEnd('View-_open');
+				
+				reject(err);
+				
+				return;
 			}
 
 			Log.timeEnd('View-_open');
