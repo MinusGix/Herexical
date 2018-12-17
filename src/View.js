@@ -275,7 +275,11 @@ class View extends EventEmitter {
 			.then((buffer, bytesRead) => this._loadedData.swapBuffer(buffer));
 	}
 
-	getSize () {
+	getSize (forceRevoke=false) {
+		if (forceRevoke) {
+			this._idleSize.revoke();
+		}
+
 		return this._idleSize();
 	}
 
