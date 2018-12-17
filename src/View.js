@@ -237,6 +237,9 @@ class View extends EventEmitter {
 	}
 
 	save () {
+		// Revoke the cached size since we have no clue what the new size of the file is (well it could be calculated but lets not go down that rabbit hole)
+		this._idleSize.revoke();
+
 		return this.editStorage.save();
 	}
 
