@@ -1,9 +1,9 @@
 function Idle (retrieveFunc) {
 	let value;
-	let func = () => {
+	let func = (...args) => {
 		// Perhaps should have another boolean which keeps track of if it has been retrieved? Less error prone, but this should be fine.
 		if (value === undefined) {
-			value = retrieveFunc();
+			value = retrieveFunc(...args);
 		}
 
 		return value;
@@ -17,9 +17,9 @@ function Idle (retrieveFunc) {
 
 function AsyncIdle (retrieveFunc) {
 	let value;
-	let func = async () => {
+	let func = async (...args) => {
 		if (value === undefined) {
-			value = await retrieveFunc();
+			value = await retrieveFunc(...args);
 		}
 
 		return value;
