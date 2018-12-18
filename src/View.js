@@ -27,7 +27,7 @@ class View extends EventEmitter {
 		);
 
 		this._idleStats = Idle.AsyncIdle(() => {
-			Log.timeStart('View-getStats');
+			Log.timeStart('View-_idleStats');
 			return new Promise((resolve, reject) => fs.stat(this._fileDir, {
 				bigint: true, // get the numbers in BigInt
 			}, (err, stats) => {
@@ -35,7 +35,7 @@ class View extends EventEmitter {
 					return reject(err);
 				}
 	
-				Log.timeEnd('View-getStats');
+				Log.timeEnd('View-_idleStats');
 				resolve(stats);
 			}));
 		});
