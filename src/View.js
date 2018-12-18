@@ -269,6 +269,11 @@ class View extends EventEmitter {
 	getStats (forceRevoke=false) {
 		Log.timeStart('View-getStats');
 
+		if (forceRevoke) {
+			// TODO: think about if it should also revoke all those that depend on it? Such as file Size
+			this._idleStats.revoke();
+		}
+
 		return this._idleStats();
 	}
 
