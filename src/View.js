@@ -26,6 +26,17 @@ class View extends EventEmitter {
 			.then(stats => stats.size)
 		);
 
+		this._idleStats = Idle.AsyncIdle(() => new Promise((resolve, reject) => fs.stat(this._fileDir, {
+				bigint: true, // get the numbers in BigInt
+			}, (err, stats) => {
+				if (err) {
+					return reject(err);
+				}
+	
+				Log.timeEnd('View-getStats');
+				resolve(stats);
+			})));
+
 		this._idleName = Idle.Idle(() => path.basename(this._fileDir));
 
 		this._viewSize = 64; // How many bytes to load whenever its told to load
@@ -255,19 +266,10 @@ class View extends EventEmitter {
 		return this.editStorage.storeOffsets(offsets, values);
 	}
 
-	getStats () {
+	getStats (forceRevoke=false) {
 		Log.timeStart('View-getStats');
 
-		return new Promise((resolve, reject) => fs.stat(this._fileDir, {
-			bigint: true, // get the numbers in BigInt
-		}, (err, stats) => {
-			if (err) {
-				return reject(err);
-			}
-
-			Log.timeEnd('View-getStats');
-			resolve(stats);
-		}));
+		return this._idleStats();
 	}
 
 	loadData (pos, length) {
@@ -278,6 +280,8 @@ class View extends EventEmitter {
 	getSize (forceRevoke=false) {
 		if (forceRevoke) {
 			this._idleSize.revoke();
+			// This is needed due to idleSize depending on it, so we also need to refresh the value of the stats
+			this._idleStats.revoke();
 		}
 
 		return this._idleSize();
