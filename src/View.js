@@ -26,7 +26,9 @@ class View extends EventEmitter {
 			.then(stats => stats.size)
 		);
 
-		this._idleStats = Idle.AsyncIdle(() => new Promise((resolve, reject) => fs.stat(this._fileDir, {
+		this._idleStats = Idle.AsyncIdle(() => {
+			Log.timeStart('View-getStats');
+			return new Promise((resolve, reject) => fs.stat(this._fileDir, {
 				bigint: true, // get the numbers in BigInt
 			}, (err, stats) => {
 				if (err) {
@@ -35,7 +37,8 @@ class View extends EventEmitter {
 	
 				Log.timeEnd('View-getStats');
 				resolve(stats);
-			})));
+			}));
+		});
 
 		this._idleName = Idle.Idle(() => path.basename(this._fileDir));
 
@@ -267,8 +270,6 @@ class View extends EventEmitter {
 	}
 
 	getStats (forceRevoke=false) {
-		Log.timeStart('View-getStats');
-
 		if (forceRevoke) {
 			// TODO: think about if it should also revoke all those that depend on it? Such as file Size
 			this._idleStats.revoke();
